@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-bg: #1B263B;
@@ -215,6 +216,18 @@
             border-radius: 8px;
             padding: 10px;
             font-size: 1rem;
+        }
+        .select2-container--default .select2-selection--single {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            height: 38px;
+            padding: 5px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 28px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 38px;
         }
         .error-message {
             color: #e74c3c;
@@ -483,7 +496,9 @@
                     <h3>Analyse basée sur les stats récentes</h3>
                 </div>
                 <div class="carousel-item" style="background-image: url('https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
-                    <h3>Supporte toutes les grandes ligues !</h3>
+                    <h3>🎉 Offre Exclusive 1xBet! Profitez d'un bonus de bienvenue avec notre code promo: <div class="promo-code" id="promoCode">ALYD1108</div>
+                        <button class="btn-copy" onclick="copyPromoCode()">Copier le code</button>
+                    </h3>
                 </div>
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
@@ -496,22 +511,28 @@
             </button>
         </div>
 
-        <div class="promo-section">
-            <h3>🎉 Offre Exclusive 1xBet !</h3>
-            <p>Choisissez deux équipes pour obtenir des prédictions basées sur leurs performances récentes! Profitez d'un bonus de bienvenue avec notre code promo :</p>
-            <div class="promo-code" id="promoCode">ALYD1108</div>
-            <button class="btn-copy" onclick="copyPromoCode()">Copier le code</button>
-        </div>
-
         <div class="form-container">
             <h5 class="m-0"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>Générer une prédiction</h5><br>
             <form id="predictionForm" method="POST" onsubmit="showSpinner()">
                 <div class="mb-3">
+                    <label for="league_filter" class="form-label">Filtrer par compétition (optionnel)</label>
+                    <select class="form-select" id="league_filter">
+                        <option value="">Toutes les compétitions</option>
+                        {% for league in league_teams.keys() %}
+                            <option value="{{ league }}">{{ league }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="home_team" class="form-label">Équipe à domicile</label>
                     <select class="form-select" id="home_team" name="home_team" required>
                         <option value="">Choisir une équipe</option>
-                        {% for team in teams %}
-                            <option value="{{ team }}" {% if team == home_team %}selected{% endif %}>{{ team }}</option>
+                        {% for league, teams in league_teams.items() %}
+                            <optgroup label="{{ league }}">
+                                {% for team in teams %}
+                                    <option value="{{ team }}" {% if team == home_team %}selected{% endif %}>{{ team }}</option>
+                                {% endfor %}
+                            </optgroup>
                         {% endfor %}
                     </select>
                 </div>
@@ -519,8 +540,12 @@
                     <label for="away_team" class="form-label">Équipe à l'extérieur</label>
                     <select class="form-select" id="away_team" name="away_team" required>
                         <option value="">Choisir une équipe</option>
-                        {% for team in teams %}
-                            <option value="{{ team }}" {% if team == away_team %}selected{% endif %}>{{ team }}</option>
+                        {% for league, teams in league_teams.items() %}
+                            <optgroup label="{{ league }}">
+                                {% for team in teams %}
+                                    <option value="{{ team }}" {% if team == away_team %}selected{% endif %}>{{ team }}</option>
+                                {% endfor %}
+                            </optgroup>
                         {% endfor %}
                     </select>
                 </div>
@@ -550,16 +575,12 @@
                 {% else %}
                     <div class="predictions">
                         <span><i class="fas fa-trophy"></i> <strong>Résultat final (1X2):</strong> {{ predictions.result }}</span>
-                        {% if is_vip %}
-                            <span><i class="fas fa-balance-scale"></i> <strong>Double chance:</strong> {{ predictions.double_chance }}</span>
-                        {% else %}
-                            <span class="vip-message"><i class="fas fa-lock"></i> Double chance : <a href="#" class="btn-vip">Devenir VIP</a></span>
-                        {% endif %}
+                        <span><i class="fas fa-balance-scale"></i> <strong>Double chance:</strong> {{ predictions.double_chance }}</span>
                         <span><i class="fas fa-futbol"></i> <strong>Nombre de buts estimé:</strong> {{ predictions.goals }}</span>
                         {% if is_vip %}
                             <span><i class="fas fa-scoreboard"></i> <strong>Score exact prédit:</strong> {{ predictions.exact_score }}</span>
                         {% else %}
-                            <span class="vip-message"><i class="fas fa-lock"></i> Score exact prédit : <a href="#" class="btn-vip">Devenir VIP</a></span>
+                            <span class="vip-message"><i class="fas fa-lock"></i> Score exact prédit : <a href="#" class="btn-vip">VIP</a></span>
                         {% endif %}
                         <span><i class="fas fa-clock"></i> <strong>Mi-temps gagnante:</strong> {{ predictions.half_winner }}</span>
                         <span><i class="fas fa-chart-line"></i> <strong>Plus/Moins de 2.5 buts:</strong> {{ predictions.over_under }}</span>
@@ -590,7 +611,45 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+        $(document).ready(function() {
+            // Initialiser Select2
+            $('#home_team, #away_team, #league_filter').select2({
+                placeholder: function() {
+                    return $(this).attr('id') === 'league_filter' ? 'Toutes les compétitions' : 'Choisir une équipe';
+                },
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Filtrer les équipes par compétition
+            $('#league_filter').on('change', function() {
+                const selectedLeague = $(this).val();
+                console.log("Filtre appliqué pour :", selectedLeague); // Débogage
+                $('#home_team, #away_team').each(function() {
+                    const $select = $(this);
+                    $select.empty(); // Vider les options existantes
+                    $select.append('<option value="">Choisir une équipe</option>'); // Option par défaut
+                    const allTeams = {
+                        "Premier League": ["AFC Bournemouth", "Arsenal FC", "Aston Villa FC", "Brentford FC", "Brighton & Hove Albion FC", "Burnley FC", "Chelsea FC", "Crystal Palace FC", "Everton FC", "Fulham FC", "Leeds United FC", "Liverpool FC", "Manchester City FC", "Manchester United FC", "Newcastle United FC", "Nottingham Forest FC", "Sunderland AFC", "Tottenham Hotspur FC", "West Ham United FC", "Wolverhampton Wanderers FC"],
+                        "Ligue 1": ["AJ Auxerre", "AS Monaco FC", "Angers SCO", "FC Lorient", "FC Metz", "FC Nantes", "Le Havre AC", "Lille OSC", "OGC Nice", "Olympique Lyonnais", "Olympique de Marseille", "Paris FC", "Paris Saint-Germain FC", "RC Strasbourg Alsace", "Racing Club de Lens", "Stade Brestois 29", "Stade Rennais FC 1901", "Toulouse FC"],
+                        "Bundesliga": ["1. FC Heidenheim 1846", "1. FC Köln", "1. FC Union Berlin", "1. FSV Mainz 05", "Bayer 04 Leverkusen", "Borussia Dortmund", "Borussia Mönchengladbach", "Eintracht Frankfurt", "FC Augsburg", "FC Bayern München", "FC St. Pauli 1910", "Hamburger SV", "RB Leipzig", "SC Freiburg", "SV Werder Bremen", "TSG 1899 Hoffenheim", "VfB Stuttgart", "VfL Wolfsburg"],
+                        "Serie A": ["AC Milan", "AC Pisa 1909", "ACF Fiorentina", "AS Roma", "Atalanta BC", "Bologna FC 1909", "Cagliari Calcio", "Como 1907", "FC Internazionale Milano", "Genoa CFC", "Hellas Verona FC", "Juventus FC", "Parma Calcio 1913", "SS Lazio", "SSC Napoli", "Torino FC", "US Cremonese", "US Lecce", "US Sassuolo Calcio", "Udinese Calcio"],
+                        "La Liga": ["Athletic Club", "CA Osasuna", "Club Atlético de Madrid", "Deportivo Alavés", "Elche CF", "FC Barcelona", "Getafe CF", "Girona FC", "Levante UD", "RC Celta de Vigo", "RCD Espanyol de Barcelona", "RCD Mallorca", "Rayo Vallecano de Madrid", "Real Betis Balompié", "Real Madrid CF", "Real Oviedo", "Real Sociedad de Fútbol", "Sevilla FC", "Valencia CF", "Villarreal CF"],
+                        "UEFA Champions League": ["AC Milan", "AC Sparta Praha", "AS Monaco FC", "Arsenal FC", "Aston Villa FC", "Atalanta BC", "BSC Young Boys", "Bayer 04 Leverkusen", "Bologna FC 1909", "Borussia Dortmund", "Celtic FC", "Club Atlético de Madrid", "Club Brugge KV", "FC Barcelona", "FC Bayern München", "FC Internazionale Milano", "FC Red Bull Salzburg", "FK Crvena Zvezda", "FK Shakhtar Donetsk", "Feyenoord Rotterdam", "GNK Dinamo Zagreb", "Girona FC", "Juventus FC", "Lille OSC", "Liverpool FC", "Manchester City FC", "PSV", "Paris Saint-Germain FC", "RB Leipzig", "Real Madrid CF", "SK Sturm Graz", "Sport Lisboa e Benfica", "Sporting Clube de Portugal", "Stade Brestois 29", "VfB Stuttgart", "ŠK Slovan Bratislava"]
+                    };
+                    const teamsToShow = selectedLeague ? allTeams[selectedLeague] || [] : [].concat(...Object.values(allTeams));
+                    teamsToShow.forEach(team => {
+                        $select.append(`<option value="${team}">${team}</option>`);
+                    });
+                    console.log("Options ajoutées :", teamsToShow); // Débogage
+                    $select.trigger('change.select2'); // Mettre à jour Select2
+                });
+            });
+        });
+
         function toggleTheme() {
             document.body.classList.toggle('dark-theme');
             const icon = document.querySelector('.theme-toggle i');
@@ -617,7 +676,6 @@
             });
         }
 
-        // Partage sur les réseaux sociaux
         const matchData = {
             home_team: "{{ home_team | safe }}",
             away_team: "{{ away_team | safe }}",
