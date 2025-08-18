@@ -61,6 +61,9 @@
         .navbar-brand img:hover {
             transform: rotate(360deg);
         }
+        .navbar-toggler .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
+        }
         .theme-toggle {
             color: #F5F5F5;
             font-size: 1.2rem;
@@ -495,12 +498,11 @@
 
         <div class="promo-section">
             <h3>🎉 Offre Exclusive 1xBet !</h3>
-            <p>Profitez d'un bonus de bienvenue avec notre code promo :</p>
+            <p>Choisissez deux équipes pour obtenir des prédictions basées sur leurs performances récentes! Profitez d'un bonus de bienvenue avec notre code promo :</p>
             <div class="promo-code" id="promoCode">ALYD1108</div>
             <button class="btn-copy" onclick="copyPromoCode()">Copier le code</button>
         </div>
 
-        <p class="intro-text">Choisissez deux équipes pour obtenir des prédictions basées sur leurs performances récentes !</p>
         <div class="form-container">
             <h5 class="m-0"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>Générer une prédiction</h5><br>
             <form id="predictionForm" method="POST" onsubmit="showSpinner()">
@@ -569,8 +571,8 @@
                         <p><strong>{{ away_team }}</strong> - Buts marqués par match : {{ away_stats.goals_avg_scored }} | Buts encaissés par match : {{ away_stats.goals_avg_conceded }}</p>
                     </div>
                     <div class="share-buttons">
-                        <a href="#" class="whatsapp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-                        <a href="#" class="telegram" onclick="shareOnTelegram()"><i class="fab fa-telegram"></i> Telegram</a>
+                        <a href="#" class="whatsapp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i> W</a>
+                        <a href="#" class="telegram" onclick="shareOnTelegram()"><i class="fab fa-telegram"></i> T</a>
                     </div>
                 {% endif %}
             </div>
