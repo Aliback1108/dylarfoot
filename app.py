@@ -3,28 +3,30 @@ import requests
 import json
 import os
 from datetime import datetime, timedelta
+from scipy.stats import poisson  # Pour les prédictions Poisson
 
 app = Flask(__name__)
 
 # Configuration de l'API
-API_TOKEN = os.getenv("API_TOKEN", "c67e9f5362d54bcdb5042f6f3e2ec0c2")  # Clé depuis variable d'environnement
+API_TOKEN = os.getenv("API_TOKEN", "c67e9f5362d54bcdb5042f6f3e2ec0c2")  # Clé depuis variable d’environnement
 BASE_URL = "http://api.football-data.org/v4"
 HEADERS = {"X-Auth-Token": API_TOKEN}
 
 # Compétitions à inclure (codes de Football-Data.org)
 COMPETITIONS = [
-    {"code": "PL", "name": "Premier League"},  # Angleterre
-    {"code": "FL1", "name": "Ligue 1"},        # France
-    {"code": "BL1", "name": "Bundesliga"},     # Allemagne
-    {"code": "SA", "name": "Serie A"},         # Italie
-    {"code": "PD", "name": "La Liga"},         # Espagne
+    {"code": "PL", "name": "Premier League"},    # Angleterre
+    {"code": "FL1", "name": "Ligue 1"},          # France
+    {"code": "BL1", "name": "Bundesliga"},       # Allemagne
+    {"code": "SA", "name": "Serie A"},           # Italie
+    {"code": "PD", "name": "La Liga"},           # Espagne
     {"code": "CL", "name": "UEFA Champions League"},  # Europe
-    # Ajoute d'autres compétitions si besoin (ex. : "PPL" pour Portugal, "ELC" pour Championship)
+    {"code": "PPL", "name": "Primeira Liga"},    # Portugal
+    {"code": "ELC", "name": "Championship"},     # Angleterre (2e division)
 ]
 
 # Chemin pour le cache des équipes
 TEAMS_CACHE_FILE = "teams_cache.json"
-CACHE_DURATION = timedelta(days=7)  # Mettre à jour toutes les semaines
+CACHE_DURATION = timedelta(days=2)  # Mettre à jour toutes les semaines
 
 def fetch_teams_from_api(competition_code):
     """Récupère les équipes d'une compétition via l'API."""
@@ -135,7 +137,7 @@ def get_team_stats(matches, team_id):
     }
 
 def predict_result(home_team, away_team, matches, team_ids):
-    """Prédit le résultat 1X2."""
+    """Prédit le résultat 1X2 avec une méthode simple basée sur les stats."""
     home_stats = get_team_stats(matches, team_ids[home_team]["id"])
     away_stats = get_team_stats(matches, team_ids[away_team]["id"])
     home_strength = home_stats["goals_avg_scored"] + 1
@@ -155,37 +157,39 @@ def predict_double_chance(home_team, away_team, matches, team_ids):
     return max(probas, key=probas.get)
 
 def predict_goals(home_team, away_team, matches, team_ids):
-    """Prédit le nombre total de buts."""
+    """Prédit le nombre total de buts avec Poisson."""
     home_stats = get_team_stats(matches, team_ids[home_team]["id"])
     away_stats = get_team_stats(matches, team_ids[away_team]["id"])
-    total_goals = (home_stats["goals_avg_scored"] + away_stats["goals_avg_conceded"] +
-                   away_stats["goals_avg_scored"] + home_stats["goals_avg_conceded"]) / 2
-    return round(total_goals) or 1
+    home_goals = poisson.mean(home_stats["goals_avg_scored"] * away_stats["goals_avg_conceded"])
+    away_goals = poisson.mean(away_stats["goals_avg_scored"] * home_stats["goals_avg_conceded"])
+    total_goals = home_goals + away_goals
+    return round(total_goals, 2), home_goals, away_goals  # Retourne total, home, away
 
 def predict_over_under_2_5(home_team, away_team, matches, team_ids):
-    """Prédit plus/moins de 2.5 buts."""
-    total_goals = predict_goals(home_team, away_team, matches, team_ids)
-    return "Plus de 2.5 buts" if total_goals > 2.5 else "Moins de 2.5 buts"
+    """Prédit Plus/Moins de 2.5 buts avec Poisson."""
+    total_goals, home_goals, away_goals = predict_goals(home_team, away_team, matches, team_ids)
+    prob_over = 1 - poisson.cdf(2.5, total_goals)  # Probabilité > 2.5 buts
+    return "Plus de 2.5 buts" if prob_over > 0.5 else "Moins de 2.5 buts", round(prob_over * 100, 2)
 
 def predict_both_teams_score(home_team, away_team, matches, team_ids):
-    """Prédit si les deux équipes marquent."""
-    home_stats = get_team_stats(matches, team_ids[home_team]["id"])
-    away_stats = get_team_stats(matches, team_ids[away_team]["id"])
-    bts_rate = (home_stats["both_teams_score_rate"] + away_stats["both_teams_score_rate"]) / 2
-    return "Oui" if bts_rate > 0.5 else "Non"
+    """Prédit si les deux équipes marquent (BTTS) avec Poisson."""
+    total_goals, home_goals, away_goals = predict_goals(home_team, away_team, matches, team_ids)
+    prob_no_goal_home = poisson.pmf(0, home_goals)  # Prob qu'à domicile ne marque pas
+    prob_no_goal_away = poisson.pmf(0, away_goals)  # Prob qu'à l'extérieur ne marque pas
+    prob_btts = 1 - (prob_no_goal_home * prob_no_goal_away)  # Prob que les deux marquent
+    return "Oui" if prob_btts > 0.5 else "Non", round(prob_btts * 100, 2)
 
 def predict_exact_score(home_team, away_team, matches, team_ids):
-    """Prédit le score exact."""
-    home_stats = get_team_stats(matches, team_ids[home_team]["id"])
-    away_stats = get_team_stats(matches, team_ids[away_team]["id"])
-    return f"{round(home_stats['goals_avg_scored']) or 1}-{round(away_stats['goals_avg_scored']) or 1}"
+    """Prédit le score exact basé sur les moyennes Poisson."""
+    total_goals, home_goals, away_goals = predict_goals(home_team, away_team, matches, team_ids)
+    return f"{int(round(home_goals, 0))}-{int(round(away_goals, 0))}"
 
 def predict_half_time_winner(home_team, away_team, matches, team_ids):
-    """Prédit le vainqueur à la mi-temps."""
+    """Prédit le vainqueur à la mi-temps (simplifié)."""
     home_stats = get_team_stats(matches, team_ids[home_team]["id"])
     away_stats = get_team_stats(matches, team_ids[away_team]["id"])
-    home_proba = 1 - (1 - home_stats["half_time_win_rate"]) * (1 - home_stats["second_half_win_rate"])
-    away_proba = 1 - (1 - away_stats["half_time_win_rate"]) * (1 - away_stats["second_half_win_rate"])
+    home_proba = home_stats["half_time_win_rate"]
+    away_proba = away_stats["half_time_win_rate"]
     total = home_proba + away_proba + 0.1
     probas = {"1": home_proba / total, "X": 0.1 / total, "2": away_proba / total}
     return max(probas, key=probas.get)
@@ -213,14 +217,17 @@ def index():
             if historical_matches:
                 home_stats = get_team_stats(historical_matches, team_ids[home_team]["id"])
                 away_stats = get_team_stats(historical_matches, team_ids[away_team]["id"])
+                total_goals, home_goals, away_goals = predict_goals(home_team, away_team, historical_matches, team_ids)
+                over_under, over_prob = predict_over_under_2_5(home_team, away_team, historical_matches, team_ids)
+                btts, btts_prob = predict_both_teams_score(home_team, away_team, historical_matches, team_ids)
                 predictions = {
                     "result": predict_result(home_team, away_team, historical_matches, team_ids),
                     "double_chance": predict_double_chance(home_team, away_team, historical_matches, team_ids),
-                    "goals": predict_goals(home_team, away_team, historical_matches, team_ids),
+                    "goals": f"{total_goals} buts (intervalle : {int(total_goals - 1)}-{int(total_goals + 1)})",
                     "exact_score": predict_exact_score(home_team, away_team, historical_matches, team_ids),
                     "half_winner": predict_half_time_winner(home_team, away_team, historical_matches, team_ids),
-                    "over_under": predict_over_under_2_5(home_team, away_team, historical_matches, team_ids),
-                    "both_teams_score": predict_both_teams_score(home_team, away_team, historical_matches, team_ids)
+                    "over_under": f"{over_under} ({over_prob}%)",
+                    "both_teams_score": f"{btts} ({btts_prob}%)"
                 }
             else:
                 predictions = "no_data"

@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DYLARFOOT</title>
+    <meta name="description" content="Prédictions football gratuites pour Premier League, Ligue 1, Primeira Liga et plus !">
+    <meta name="keywords" content="prédictions foot, Premier League, Primeira Liga, Championship">
+    <title>DilarFoot</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='ballon.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -322,6 +324,14 @@
             gap: 12px;
             margin: 10px 0;
         }
+        .vip-form {
+            display: none;
+            margin-top: 10px;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        .vip-form.active {
+            display: block;
+        }
         .btn-primary {
             background-color: var(--button-primary);
             border: none;
@@ -515,7 +525,7 @@
             <h5 class="m-0"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>Générer une prédiction</h5><br>
             <form id="predictionForm" method="POST" onsubmit="showSpinner()">
                 <div class="mb-3">
-                    <label for="league_filter" class="form-label">Filtrer par compétition (optionnel)</label>
+                    <label for="league_filter" class="form-label">Dylar!🎉Profitez d'un bonus de bienvenue sur 1xBet avec notre code promo (ALYD1108)</label>
                     <select class="form-select" id="league_filter">
                         <option value="">Toutes les compétitions</option>
                         {% for league in league_teams.keys() %}
@@ -574,17 +584,18 @@
                     <div class="predictions text-danger">Pas assez de données historiques pour ce match.</div>
                 {% else %}
                     <div class="predictions">
-                        <span><i class="fas fa-trophy"></i> <strong>Résultat final (1X2):</strong> {{ predictions.result }}</span>
+                        <span class="vip-message"><i class="fas fa-trophy"></i> Résultat final (1X2): <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'result')">VIP</a></span>
                         <span><i class="fas fa-balance-scale"></i> <strong>Double chance:</strong> {{ predictions.double_chance }}</span>
-                        <span><i class="fas fa-futbol"></i> <strong>Nombre de buts estimé:</strong> {{ predictions.goals }}</span>
-                        {% if is_vip %}
-                            <span><i class="fas fa-scoreboard"></i> <strong>Score exact prédit:</strong> {{ predictions.exact_score }}</span>
-                        {% else %}
-                            <span class="vip-message"><i class="fas fa-lock"></i> Score exact prédit : <a href="#" class="btn-vip">VIP</a></span>
-                        {% endif %}
-                        <span><i class="fas fa-clock"></i> <strong>Mi-temps gagnante:</strong> {{ predictions.half_winner }}</span>
+                        <span class="vip-message"><i class="fas fa-futbol"></i> Nombre de buts estimé: <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'goals')">VIP</a></span>
+                        <span><i class="fas fa-clock"></i> <strong>Équipe qui va gagner au moins une mi-temps:</strong> {{ predictions.half_winner }}</span>
+                        <span class="vip-message"><i class="fas fa-users"></i> Les deux équipes marquent: <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'both_teams_score')">VIP</a></span>
                         <span><i class="fas fa-chart-line"></i> <strong>Plus/Moins de 2.5 buts:</strong> {{ predictions.over_under }}</span>
-                        <span><i class="fas fa-users"></i> <strong>Les deux équipes marquent:</strong> {{ predictions.both_teams_score }}</span>
+                        <span class="vip-message"><i class="fas fa-futbol"></i> Score exact prédit: <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'exact_score')">VIP</a></span>
+                        <div class="vip-form" id="vipForm">
+                            <input type="text" id="vipCode" class="form-control mb-2" placeholder="Entrez votre code VIP">
+                            <button class="btn btn-vip" onclick="validateVipCode(event)">Valider</button>
+                            <div id="vipError" class="error-message" style="display: none;">Code incorrect! Vérifiez votre code et ressayez. Inscrivez-vous avec le code promo ALYD1108</div>
+                        </div>
                     </div>
                     <div class="stats-section">
                         <h4>Statistiques des équipes</h4>
@@ -615,7 +626,6 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Initialiser Select2
             $('#home_team, #away_team, #league_filter').select2({
                 placeholder: function() {
                     return $(this).attr('id') === 'league_filter' ? 'Toutes les compétitions' : 'Choisir une équipe';
@@ -624,28 +634,27 @@
                 width: '100%'
             });
 
-            // Filtrer les équipes par compétition
             $('#league_filter').on('change', function() {
                 const selectedLeague = $(this).val();
-                console.log("Filtre appliqué pour :", selectedLeague); // Débogage
                 $('#home_team, #away_team').each(function() {
                     const $select = $(this);
-                    $select.empty(); // Vider les options existantes
-                    $select.append('<option value="">Choisir une équipe</option>'); // Option par défaut
+                    $select.empty();
+                    $select.append('<option value="">Choisir une équipe</option>');
                     const allTeams = {
                         "Premier League": ["AFC Bournemouth", "Arsenal FC", "Aston Villa FC", "Brentford FC", "Brighton & Hove Albion FC", "Burnley FC", "Chelsea FC", "Crystal Palace FC", "Everton FC", "Fulham FC", "Leeds United FC", "Liverpool FC", "Manchester City FC", "Manchester United FC", "Newcastle United FC", "Nottingham Forest FC", "Sunderland AFC", "Tottenham Hotspur FC", "West Ham United FC", "Wolverhampton Wanderers FC"],
                         "Ligue 1": ["AJ Auxerre", "AS Monaco FC", "Angers SCO", "FC Lorient", "FC Metz", "FC Nantes", "Le Havre AC", "Lille OSC", "OGC Nice", "Olympique Lyonnais", "Olympique de Marseille", "Paris FC", "Paris Saint-Germain FC", "RC Strasbourg Alsace", "Racing Club de Lens", "Stade Brestois 29", "Stade Rennais FC 1901", "Toulouse FC"],
                         "Bundesliga": ["1. FC Heidenheim 1846", "1. FC Köln", "1. FC Union Berlin", "1. FSV Mainz 05", "Bayer 04 Leverkusen", "Borussia Dortmund", "Borussia Mönchengladbach", "Eintracht Frankfurt", "FC Augsburg", "FC Bayern München", "FC St. Pauli 1910", "Hamburger SV", "RB Leipzig", "SC Freiburg", "SV Werder Bremen", "TSG 1899 Hoffenheim", "VfB Stuttgart", "VfL Wolfsburg"],
                         "Serie A": ["AC Milan", "AC Pisa 1909", "ACF Fiorentina", "AS Roma", "Atalanta BC", "Bologna FC 1909", "Cagliari Calcio", "Como 1907", "FC Internazionale Milano", "Genoa CFC", "Hellas Verona FC", "Juventus FC", "Parma Calcio 1913", "SS Lazio", "SSC Napoli", "Torino FC", "US Cremonese", "US Lecce", "US Sassuolo Calcio", "Udinese Calcio"],
                         "La Liga": ["Athletic Club", "CA Osasuna", "Club Atlético de Madrid", "Deportivo Alavés", "Elche CF", "FC Barcelona", "Getafe CF", "Girona FC", "Levante UD", "RC Celta de Vigo", "RCD Espanyol de Barcelona", "RCD Mallorca", "Rayo Vallecano de Madrid", "Real Betis Balompié", "Real Madrid CF", "Real Oviedo", "Real Sociedad de Fútbol", "Sevilla FC", "Valencia CF", "Villarreal CF"],
-                        "UEFA Champions League": ["AC Milan", "AC Sparta Praha", "AS Monaco FC", "Arsenal FC", "Aston Villa FC", "Atalanta BC", "BSC Young Boys", "Bayer 04 Leverkusen", "Bologna FC 1909", "Borussia Dortmund", "Celtic FC", "Club Atlético de Madrid", "Club Brugge KV", "FC Barcelona", "FC Bayern München", "FC Internazionale Milano", "FC Red Bull Salzburg", "FK Crvena Zvezda", "FK Shakhtar Donetsk", "Feyenoord Rotterdam", "GNK Dinamo Zagreb", "Girona FC", "Juventus FC", "Lille OSC", "Liverpool FC", "Manchester City FC", "PSV", "Paris Saint-Germain FC", "RB Leipzig", "Real Madrid CF", "SK Sturm Graz", "Sport Lisboa e Benfica", "Sporting Clube de Portugal", "Stade Brestois 29", "VfB Stuttgart", "ŠK Slovan Bratislava"]
+                        "UEFA Champions League": ["AC Milan", "AC Sparta Praha", "AS Monaco FC", "Arsenal FC", "Aston Villa FC", "Atalanta BC", "BSC Young Boys", "Bayer 04 Leverkusen", "Bologna FC 1909", "Borussia Dortmund", "Celtic FC", "Club Atlético de Madrid", "Club Brugge KV", "FC Barcelona", "FC Bayern München", "FC Internazionale Milano", "FC Red Bull Salzburg", "FK Crvena Zvezda", "FK Shakhtar Donetsk", "Feyenoord Rotterdam", "GNK Dinamo Zagreb", "Girona FC", "Juventus FC", "Lille OSC", "Liverpool FC", "Manchester City FC", "PSV", "Paris Saint-Germain FC", "RB Leipzig", "Real Madrid CF", "SK Sturm Graz", "Sport Lisboa e Benfica", "Sporting Clube de Portugal", "Stade Brestois 29", "VfB Stuttgart", "ŠK Slovan Bratislava"],
+                        "Primeira Liga": ["AVS", "CD Nacional", "CD Santa Clara", "CD Tondela", "CF Estrela da Amadora", "Casa Pia AC", "FC Alverca", "FC Arouca", "FC Famalicão", "FC Porto", "GD Estoril Praia", "Gil Vicente FC", "Moreirense FC", "Rio Ave FC", "Sport Lisboa e Benfica", "Sporting Clube de Braga", "Sporting Clube de Portugal", "Vitória SC"],
+                        "Championship": ["Birmingham City FC", "Blackburn Rovers FC", "Bristol City FC", "Charlton Athletic FC", "Coventry City FC", "Derby County FC", "Hull City AFC", "Ipswich Town FC", "Leicester City FC", "Middlesbrough FC", "Millwall FC", "Norwich City FC", "Oxford United FC", "Portsmouth FC", "Preston North End FC", "Queens Park Rangers FC", "Sheffield United FC", "Sheffield Wednesday FC", "Southampton FC", "Stoke City FC", "Swansea City AFC", "Watford FC", "West Bromwich Albion FC", "Wrexham AFC"]
                     };
                     const teamsToShow = selectedLeague ? allTeams[selectedLeague] || [] : [].concat(...Object.values(allTeams));
                     teamsToShow.forEach(team => {
                         $select.append(`<option value="${team}">${team}</option>`);
                     });
-                    console.log("Options ajoutées :", teamsToShow); // Débogage
-                    $select.trigger('change.select2'); // Mettre à jour Select2
+                    $select.trigger('change.select2');
                 });
             });
         });
@@ -676,21 +685,55 @@
             });
         }
 
-        const matchData = {
-            home_team: "{{ home_team | safe }}",
-            away_team: "{{ away_team | safe }}",
-            result: "{{ predictions.result if predictions and predictions != 'no_data' else '' | safe }}"
-        };
+        function toggleVipForm(event, type) {
+            event.preventDefault();
+            const vipForm = document.getElementById('vipForm');
+            vipForm.dataset.type = type; // Stocke le type de prédiction
+            vipForm.classList.add('active');
+        }
+
+        function validateVipCode(event) {
+            event.preventDefault();
+            const vipCode = document.getElementById('vipCode').value;
+            const vipForm = document.getElementById('vipForm');
+            const vipError = document.getElementById('vipError');
+            const predictions = document.querySelector('.predictions');
+            const validCodes = ['VIP11', 'BILY', 'EMI', 'PROF', 'ANG1', 'CHR1', 'MIG1'];
+
+            if (validCodes.includes(vipCode)) {
+                vipForm.classList.remove('active');
+                vipError.style.display = 'none';
+                let isVip = true; // Simule l'état VIP
+
+                // Met à jour les prédictions VIP
+                const vipMessages = predictions.querySelectorAll('.vip-message');
+                vipMessages.forEach(msg => {
+                    const span = document.createElement('span');
+                    if (msg.textContent.includes('Résultat final (1X2)')) {
+                        span.innerHTML = '<i class="fas fa-trophy"></i> <strong>Résultat final (1X2):</strong> {{ predictions.result }}';
+                    } else if (msg.textContent.includes('Nombre de buts estimé')) {
+                        span.innerHTML = '<i class="fas fa-futbol"></i> <strong>Nombre de buts estimé:</strong> {{ predictions.goals }}';
+                    } else if (msg.textContent.includes('Score exact prédit')) {
+                        span.innerHTML = '<i class="fas fa-scoreboard"></i> <strong>Score exact prédit:</strong> {{ predictions.exact_score }}';
+                    } else if (msg.textContent.includes('Les deux équipes marquent')) {
+                        span.innerHTML = '<i class="fas fa-users"></i> <strong>Les deux équipes marquent:</strong> {{ predictions.both_teams_score }}';
+                    }
+                    msg.parentNode.replaceChild(span, msg);
+                });
+            } else {
+                vipError.style.display = 'block';
+            }
+        }
 
         function shareOnWhatsApp() {
-            const text = `Prédiction pour ${matchData.home_team} vs ${matchData.away_team} : Résultat final : ${matchData.result}.`;
-            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            const match = document.querySelector('.match-title').textContent;
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent('Check this match prediction: ' + match)}`;
             window.open(url, '_blank');
         }
 
         function shareOnTelegram() {
-            const text = `Prédiction pour ${matchData.home_team} vs ${matchData.away_team} : Résultat final : ${matchData.result}.`;
-            const url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`;
+            const match = document.querySelector('.match-title').textContent;
+            const url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent('Check this match prediction: ' + match)}`;
             window.open(url, '_blank');
         }
     </script>

@@ -439,6 +439,166 @@
     "\u0160K Slovan Bratislava": {
       "id": 7509,
       "logo": "https://crests.football-data.org/7509.png"
+    },
+    "Rio Ave FC": {
+      "id": 496,
+      "logo": "https://crests.football-data.org/496.png"
+    },
+    "FC Porto": {
+      "id": 503,
+      "logo": "https://crests.football-data.org/503.png"
+    },
+    "GD Estoril Praia": {
+      "id": 582,
+      "logo": "https://crests.football-data.org/582.png"
+    },
+    "Moreirense FC": {
+      "id": 583,
+      "logo": "https://crests.football-data.org/583.png"
+    },
+    "FC Arouca": {
+      "id": 712,
+      "logo": "https://crests.football-data.org/712.png"
+    },
+    "CD Tondela": {
+      "id": 1049,
+      "logo": "https://crests.football-data.org/1049.png"
+    },
+    "CD Nacional": {
+      "id": 5529,
+      "logo": "https://crests.football-data.org/5529.png"
+    },
+    "CD Santa Clara": {
+      "id": 5530,
+      "logo": "https://crests.football-data.org/5530.png"
+    },
+    "FC Famalic\u00e3o": {
+      "id": 5531,
+      "logo": "https://crests.football-data.org/5531.png"
+    },
+    "Gil Vicente FC": {
+      "id": 5533,
+      "logo": "https://crests.football-data.org/5533.png"
+    },
+    "Vit\u00f3ria SC": {
+      "id": 5543,
+      "logo": "https://crests.football-data.org/5543.png"
+    },
+    "Sporting Clube de Braga": {
+      "id": 5613,
+      "logo": "https://crests.football-data.org/5613.png"
+    },
+    "Casa Pia AC": {
+      "id": 6618,
+      "logo": "https://crests.football-data.org/6618.png"
+    },
+    "FC Alverca": {
+      "id": 7822,
+      "logo": "https://crests.football-data.org/7822.png"
+    },
+    "CF Estrela da Amadora": {
+      "id": 9136,
+      "logo": "https://crests.football-data.org/9136.png"
+    },
+    "AVS": {
+      "id": 10340,
+      "logo": "https://crests.football-data.org/10340.png"
+    },
+    "Blackburn Rovers FC": {
+      "id": 59,
+      "logo": "https://crests.football-data.org/59.png"
+    },
+    "Norwich City FC": {
+      "id": 68,
+      "logo": "https://crests.football-data.org/68.png"
+    },
+    "Queens Park Rangers FC": {
+      "id": 69,
+      "logo": "https://crests.football-data.org/69.png"
+    },
+    "Stoke City FC": {
+      "id": 70,
+      "logo": "https://crests.football-data.org/70.png"
+    },
+    "Swansea City AFC": {
+      "id": 72,
+      "logo": "https://crests.football-data.org/72.png"
+    },
+    "West Bromwich Albion FC": {
+      "id": 74,
+      "logo": "https://crests.football-data.org/74.png"
+    },
+    "Hull City AFC": {
+      "id": 322,
+      "logo": "https://crests.football-data.org/322.png"
+    },
+    "Portsmouth FC": {
+      "id": 325,
+      "logo": "https://crests.football-data.org/325.png"
+    },
+    "Birmingham City FC": {
+      "id": 332,
+      "logo": "https://crests.football-data.org/332.png"
+    },
+    "Leicester City FC": {
+      "id": 338,
+      "logo": "https://crests.football-data.org/338.png"
+    },
+    "Southampton FC": {
+      "id": 340,
+      "logo": "https://crests.football-data.org/340.png"
+    },
+    "Derby County FC": {
+      "id": 342,
+      "logo": "https://crests.football-data.org/342.png"
+    },
+    "Middlesbrough FC": {
+      "id": 343,
+      "logo": "https://crests.football-data.org/343.png"
+    },
+    "Sheffield Wednesday FC": {
+      "id": 345,
+      "logo": "https://crests.football-data.org/345.png"
+    },
+    "Watford FC": {
+      "id": 346,
+      "logo": "https://crests.football-data.org/346.png"
+    },
+    "Charlton Athletic FC": {
+      "id": 348,
+      "logo": "https://crests.football-data.org/348.png"
+    },
+    "Ipswich Town FC": {
+      "id": 349,
+      "logo": "https://crests.football-data.org/349.png"
+    },
+    "Sheffield United FC": {
+      "id": 356,
+      "logo": "https://crests.football-data.org/356.png"
+    },
+    "Millwall FC": {
+      "id": 384,
+      "logo": "https://crests.football-data.org/384.png"
+    },
+    "Bristol City FC": {
+      "id": 387,
+      "logo": "https://crests.football-data.org/387.png"
+    },
+    "Wrexham AFC": {
+      "id": 404,
+      "logo": "https://crests.football-data.org/404.png"
+    },
+    "Coventry City FC": {
+      "id": 1076,
+      "logo": "https://crests.football-data.org/1076.png"
+    },
+    "Preston North End FC": {
+      "id": 1081,
+      "logo": "https://crests.football-data.org/1081.png"
+    },
+    "Oxford United FC": {
+      "id": 1082,
+      "logo": "https://crests.football-data.org/1082.png"
     }
   },
   "league_teams": {
@@ -585,7 +745,53 @@
       "Stade Brestois 29",
       "VfB Stuttgart",
       "\u0160K Slovan Bratislava"
+    ],
+    "Primeira Liga": [
+      "AVS",
+      "CD Nacional",
+      "CD Santa Clara",
+      "CD Tondela",
+      "CF Estrela da Amadora",
+      "Casa Pia AC",
+      "FC Alverca",
+      "FC Arouca",
+      "FC Famalic\u00e3o",
+      "FC Porto",
+      "GD Estoril Praia",
+      "Gil Vicente FC",
+      "Moreirense FC",
+      "Rio Ave FC",
+      "Sport Lisboa e Benfica",
+      "Sporting Clube de Braga",
+      "Sporting Clube de Portugal",
+      "Vit\u00f3ria SC"
+    ],
+    "Championship": [
+      "Birmingham City FC",
+      "Blackburn Rovers FC",
+      "Bristol City FC",
+      "Charlton Athletic FC",
+      "Coventry City FC",
+      "Derby County FC",
+      "Hull City AFC",
+      "Ipswich Town FC",
+      "Leicester City FC",
+      "Middlesbrough FC",
+      "Millwall FC",
+      "Norwich City FC",
+      "Oxford United FC",
+      "Portsmouth FC",
+      "Preston North End FC",
+      "Queens Park Rangers FC",
+      "Sheffield United FC",
+      "Sheffield Wednesday FC",
+      "Southampton FC",
+      "Stoke City FC",
+      "Swansea City AFC",
+      "Watford FC",
+      "West Bromwich Albion FC",
+      "Wrexham AFC"
     ]
   },
-  "last_updated": "2025-08-18T11:17:20.943333"
+  "last_updated": "2025-08-27T00:42:10.841915"
 }
