@@ -143,7 +143,7 @@ def predict_result(home_team, away_team, matches, team_ids):
     home_strength = home_stats["goals_avg_scored"] + 1
     away_strength = away_stats["goals_avg_scored"] + 1
     total = home_strength + away_strength + 1
-    probas = {"1": home_strength / total, "X": 1 / total, "2": away_strength / total}
+    probas = {"V1": home_strength / total, "X": 1 / total, "V2": away_strength / total}
     return max(probas, key=probas.get)
 
 def predict_double_chance(home_team, away_team, matches, team_ids):
@@ -191,7 +191,7 @@ def predict_half_time_winner(home_team, away_team, matches, team_ids):
     home_proba = home_stats["half_time_win_rate"]
     away_proba = away_stats["half_time_win_rate"]
     total = home_proba + away_proba + 0.1
-    probas = {"1": home_proba / total, "X": 0.1 / total, "2": away_proba / total}
+    probas = {"Equipe 1": home_proba / total, "X": 0.1 / total, "Equipe 2": away_proba / total}
     return max(probas, key=probas.get)
 
 @app.route('/', methods=['GET', 'POST'])

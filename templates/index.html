@@ -584,13 +584,13 @@
                     <div class="predictions text-danger">Pas assez de données historiques pour ce match.</div>
                 {% else %}
                     <div class="predictions">
-                        <span class="vip-message"><i class="fas fa-trophy"></i> Résultat final (1X2): <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'result')">VIP</a></span>
-                        <span><i class="fas fa-balance-scale"></i> <strong>Double chance:</strong> {{ predictions.double_chance }}</span>
-                        <span class="vip-message"><i class="fas fa-futbol"></i> Nombre de buts estimé: <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'goals')">VIP</a></span>
+                        <span><i class="fas fa-trophy"></i> <strong>Résultat final (V1 X V2):</strong> {{ predictions.result }}</span>
+                        <span><i class="fas fa-balance-scale"></i> <strong>Double chance :</strong> {{ predictions.double_chance }}</span>
+                        <span><i class="fas fa-futbol"></i> <strong>Nombre de buts estimé :</strong> {{ predictions.goals }}</span>
                         <span><i class="fas fa-clock"></i> <strong>Équipe qui va gagner au moins une mi-temps:</strong> {{ predictions.half_winner }}</span>
-                        <span class="vip-message"><i class="fas fa-users"></i> Les deux équipes marquent: <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'both_teams_score')">VIP</a></span>
-                        <span><i class="fas fa-chart-line"></i> <strong>Plus/Moins de 2.5 buts:</strong> {{ predictions.over_under }}</span>
-                        <span class="vip-message"><i class="fas fa-futbol"></i> Score exact prédit: <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'exact_score')">VIP</a></span>
+                        <span><i class="fas fa-users"></i> <strong>Les deux équipes marquent : </strong> {{ predictions.both_teams_score }} </span>
+                        <span><i class="fas fa-chart-line"></i> <strong>Plus/Moins de 2.5 buts :</strong> {{ predictions.over_under }}</span>
+                        <span class="vip-message"><i class="fas fa-futbol"></i> Score exact prédit : <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'exact_score')">VIP</a></span>
                         <div class="vip-form" id="vipForm">
                             <input type="text" id="vipCode" class="form-control mb-2" placeholder="Entrez votre code VIP">
                             <button class="btn btn-vip" onclick="validateVipCode(event)">Valider</button>
@@ -603,8 +603,8 @@
                         <p><strong>{{ away_team }}</strong> - Buts marqués par match : {{ away_stats.goals_avg_scored }} | Buts encaissés par match : {{ away_stats.goals_avg_conceded }}</p>
                     </div>
                     <div class="share-buttons">
-                        <a href="#" class="whatsapp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i> W</a>
-                        <a href="#" class="telegram" onclick="shareOnTelegram()"><i class="fab fa-telegram"></i> T</a>
+                        <a href="#" class="whatsapp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="telegram" onclick="shareOnTelegram()"><i class="fab fa-telegram"></i></a>
                     </div>
                 {% endif %}
             </div>
