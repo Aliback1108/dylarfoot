@@ -388,57 +388,57 @@
       "id": 498,
       "logo": "https://crests.football-data.org/498.png"
     },
+    "Galatasaray SK": {
+      "id": 610,
+      "logo": "https://crests.football-data.org/610.png"
+    },
+    "Qaraba\u011f A\u011fdam FK": {
+      "id": 611,
+      "logo": "https://crests.football-data.org/611.png"
+    },
+    "PAE Olympiakos SFP": {
+      "id": 654,
+      "logo": "https://crests.football-data.org/654.png"
+    },
     "PSV": {
       "id": 674,
       "logo": "https://crests.football-data.org/674.png"
     },
-    "Feyenoord Rotterdam": {
-      "id": 675,
-      "logo": "https://crests.football-data.org/675.png"
-    },
-    "Celtic FC": {
-      "id": 732,
-      "logo": "https://crests.football-data.org/732.png"
-    },
-    "GNK Dinamo Zagreb": {
-      "id": 755,
-      "logo": "https://crests.football-data.org/755.png"
+    "AFC Ajax": {
+      "id": 678,
+      "logo": "https://crests.football-data.org/678.png"
     },
     "Club Brugge KV": {
       "id": 851,
       "logo": "https://crests.football-data.org/851.png"
     },
-    "AC Sparta Praha": {
-      "id": 907,
-      "logo": "https://crests.football-data.org/907.png"
+    "SK Slavia Praha": {
+      "id": 930,
+      "logo": "https://crests.football-data.org/930.png"
     },
-    "BSC Young Boys": {
-      "id": 1871,
-      "logo": "https://crests.football-data.org/1871.png"
-    },
-    "FC Red Bull Salzburg": {
-      "id": 1877,
-      "logo": "https://crests.football-data.org/1877.png"
-    },
-    "FK Shakhtar Donetsk": {
-      "id": 1887,
-      "logo": "https://crests.football-data.org/1887.png"
+    "FC K\u00f8benhavn": {
+      "id": 1876,
+      "logo": "https://crests.football-data.org/1876.png"
     },
     "Sport Lisboa e Benfica": {
       "id": 1903,
       "logo": "https://crests.football-data.org/1903.png"
     },
-    "SK Sturm Graz": {
-      "id": 2021,
-      "logo": "https://crests.football-data.org/2021.png"
+    "Royale Union Saint-Gilloise": {
+      "id": 3929,
+      "logo": "https://crests.football-data.org/3929.png"
     },
-    "FK Crvena Zvezda": {
-      "id": 7283,
-      "logo": "https://crests.football-data.org/7283.png"
+    "FK Bod\u00f8/Glimt": {
+      "id": 5721,
+      "logo": "https://crests.football-data.org/5721.png"
     },
-    "\u0160K Slovan Bratislava": {
-      "id": 7509,
-      "logo": "https://crests.football-data.org/7509.png"
+    "FK Kairat": {
+      "id": 10601,
+      "logo": "https://crests.football-data.org/10601.png"
+    },
+    "Paphos FC": {
+      "id": 11034,
+      "logo": "https://crests.football-data.org/11034.png"
     },
     "Rio Ave FC": {
       "id": 496,
@@ -709,42 +709,42 @@
       "Villarreal CF"
     ],
     "UEFA Champions League": [
-      "AC Milan",
-      "AC Sparta Praha",
+      "AFC Ajax",
       "AS Monaco FC",
       "Arsenal FC",
-      "Aston Villa FC",
       "Atalanta BC",
-      "BSC Young Boys",
+      "Athletic Club",
       "Bayer 04 Leverkusen",
-      "Bologna FC 1909",
       "Borussia Dortmund",
-      "Celtic FC",
+      "Chelsea FC",
       "Club Atl\u00e9tico de Madrid",
       "Club Brugge KV",
+      "Eintracht Frankfurt",
       "FC Barcelona",
       "FC Bayern M\u00fcnchen",
       "FC Internazionale Milano",
-      "FC Red Bull Salzburg",
-      "FK Crvena Zvezda",
-      "FK Shakhtar Donetsk",
-      "Feyenoord Rotterdam",
-      "GNK Dinamo Zagreb",
-      "Girona FC",
+      "FC K\u00f8benhavn",
+      "FK Bod\u00f8/Glimt",
+      "FK Kairat",
+      "Galatasaray SK",
       "Juventus FC",
-      "Lille OSC",
       "Liverpool FC",
       "Manchester City FC",
+      "Newcastle United FC",
+      "Olympique de Marseille",
+      "PAE Olympiakos SFP",
       "PSV",
+      "Paphos FC",
       "Paris Saint-Germain FC",
-      "RB Leipzig",
+      "Qaraba\u011f A\u011fdam FK",
       "Real Madrid CF",
-      "SK Sturm Graz",
+      "Royale Union Saint-Gilloise",
+      "SK Slavia Praha",
+      "SSC Napoli",
       "Sport Lisboa e Benfica",
       "Sporting Clube de Portugal",
-      "Stade Brestois 29",
-      "VfB Stuttgart",
-      "\u0160K Slovan Bratislava"
+      "Tottenham Hotspur FC",
+      "Villarreal CF"
     ],
     "Primeira Liga": [
       "AVS",
@@ -793,5 +793,5 @@
       "Wrexham AFC"
     ]
   },
-  "last_updated": "2025-08-27T00:42:10.841915"
+  "last_updated": "2026-04-10T21:10:55.905053"
 }
