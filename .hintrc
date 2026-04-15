@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "development"
+  ],
+  "hints": {
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "user-select",
+          "mask-image",
+          "backdrop-filter"
+        ]
+      }
+    ]
+  }
+}

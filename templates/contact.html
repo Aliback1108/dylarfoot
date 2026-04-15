@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contactez DilarFoot — Rejoignez notre communauté Telegram et WhatsApp pour les coupons gratuits.">
+    <title>DilarFoot — Contact</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0D1117;
+            --bg-surface: #161B22;
+            --bg-surface2: #1F2937;
+            --accent-green: #00FF87;
+            --accent-green-dim: rgba(0, 255, 135, 0.12);
+            --accent-green-glow: rgba(0, 255, 135, 0.35);
+            --accent-gold: #FFD700;
+            --accent-gold-dim: rgba(255, 215, 0, 0.12);
+            --accent-promo: #FF6B35;
+            --accent-tg: #229ED9;
+            --accent-wa: #25D366;
+            --text-primary: #F0F6FC;
+            --text-secondary: #8B949E;
+            --text-muted: #484F58;
+            --border: rgba(240, 246, 252, 0.07);
+            --border-accent: rgba(0, 255, 135, 0.25);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --ticker-height: 44px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Syne', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,255,135,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,100,255,0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── NAVBAR ─── */
+        .navbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(13,17,23,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px; height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .navbar-brand img { width: 28px; height: 28px; }
+        .navbar-brand img:hover { transform: rotate(360deg); }
+        .brand-text { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-primary); }
+        .brand-text span { color: var(--accent-green); }
+        .navbar-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+        .navbar-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; }
+        .navbar-links a:hover, .navbar-links a.active { color: var(--accent-green); }
+        .navbar-hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; }
+        .navbar-hamburger span { display: block; width: 22px; height: 2px; background: var(--text-primary); border-radius: 2px; }
+        .mobile-menu { display: none; flex-direction: column; background: var(--bg-surface); border-bottom: 1px solid var(--border); padding: 16px 24px; gap: 16px; position: sticky; top: 64px; z-index: 99; }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+        @media (max-width: 768px) { .navbar-links { display: none; } .navbar-hamburger { display: flex; } }
+
+        /* ─── PROMO TICKER ─── */
+        .promo-bar { position: sticky; top: 64px; z-index: 99; height: var(--ticker-height); background: linear-gradient(90deg, #1A0800 0%, #2D1000 40%, #2D1000 60%, #1A0800 100%); border-bottom: 1px solid rgba(255,107,53,0.4); box-shadow: 0 2px 20px rgba(255,107,53,0.15); display: flex; align-items: center; overflow: hidden; user-select: none; }
+        .promo-bar::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px; background: var(--accent-promo); animation: barGlow 2.5s ease-in-out infinite; }
+        @keyframes barGlow { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; box-shadow: 0 0 10px var(--accent-promo); } }
+        .promo-bar-label { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px 0 16px; height: 100%; background: var(--accent-promo); font-size: 0.72rem; font-weight: 800; color: #fff; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%); }
+        .promo-bar-ticker { flex: 1; overflow: hidden; height: 100%; mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%); }
+        .ticker-track { display: flex; align-items: center; height: 100%; white-space: nowrap; animation: tickerScroll 28s linear infinite; }
+        .promo-bar:hover .ticker-track { animation-play-state: paused; }
+        @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .ticker-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 32px; font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
+        .ticker-item .t-accent { color: var(--text-primary); font-weight: 800; }
+        .ticker-item .t-promo { color: var(--accent-promo); font-weight: 800; }
+        .ticker-item .t-dot { width: 4px; height: 4px; background: rgba(255,107,53,0.4); border-radius: 50%; flex-shrink: 0; }
+        .promo-bar-actions { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 8px; height: 100%; border-left: 1px solid rgba(255,107,53,0.2); }
+        .promo-code-pill { background: rgba(255,107,53,0.12); border: 1px dashed rgba(255,107,53,0.5); border-radius: 100px; padding: 4px 12px; font-size: 0.78rem; font-weight: 800; color: var(--accent-promo); letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s; white-space: nowrap; position: relative; }
+        .promo-code-pill:hover { background: rgba(255,107,53,0.22); border-color: var(--accent-promo); }
+        .promo-code-pill .copied-flash { display: none; position: absolute; inset: 0; background: rgba(0,255,135,0.15); border-radius: 100px; align-items: center; justify-content: center; color: var(--accent-green); font-size: 0.72rem; }
+        .promo-code-pill.copied .copied-flash { display: flex; }
+        .promo-code-pill.copied .pill-text { visibility: hidden; }
+        .btn-promo-cta { background: var(--accent-promo); color: #fff; border: none; border-radius: 100px; font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 800; padding: 6px 14px; cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.03em; box-shadow: 0 0 14px rgba(255,107,53,0.35); }
+        .btn-promo-cta:hover { box-shadow: 0 0 22px rgba(255,107,53,0.6); transform: scale(1.04); }
+        @media (max-width: 640px) { .promo-bar-label span { display: none; } .btn-promo-cta { display: none; } }
+
+        /* ─── SHARED ─── */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+        .main-container { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; position: relative; z-index: 1; }
+
+        .section-label {
+            font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--text-muted); margin-bottom: 16px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        /* ─── HERO ─── */
+        .hero { text-align: center; padding: 64px 24px 48px; max-width: 600px; margin: 0 auto; position: relative; z-index: 1; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 7px; background: var(--accent-green-dim); border: 1px solid var(--border-accent); color: var(--accent-green); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; margin-bottom: 24px; animation: fadeUp 0.5s ease both; }
+        .hero h1 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 14px; animation: fadeUp 0.5s 0.1s ease both; }
+        .hero h1 .hl { color: var(--accent-green); }
+        .hero p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; animation: fadeUp 0.5s 0.2s ease both; }
+
+        /* ─── COMMUNITY CARDS ─── */
+        .community-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+            animation: fadeUp 0.5s 0.3s ease both;
+        }
+        @media (max-width: 580px) { .community-grid { grid-template-columns: 1fr; } }
+
+        .community-card {
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: transform 0.2s;
+            text-decoration: none;
+        }
+        .community-card:hover { transform: translateY(-4px); }
+        .community-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.06;
+            transition: opacity 0.2s;
+        }
+        .community-card:hover::before { opacity: 0.1; }
+
+        /* Telegram */
+        .community-card.tg {
+            background: var(--bg-surface);
+            border: 1px solid rgba(34,158,217,0.25);
+            box-shadow: 0 0 40px rgba(34,158,217,0.06);
+        }
+        .community-card.tg::before { background: var(--accent-tg); }
+        .community-card.tg:hover { border-color: rgba(34,158,217,0.5); box-shadow: 0 0 40px rgba(34,158,217,0.12); }
+
+        /* WhatsApp */
+        .community-card.wa {
+            background: var(--bg-surface);
+            border: 1px solid rgba(37,211,102,0.2);
+            box-shadow: 0 0 40px rgba(37,211,102,0.04);
+        }
+        .community-card.wa::before { background: var(--accent-wa); }
+        .community-card.wa:hover { border-color: rgba(37,211,102,0.4); box-shadow: 0 0 40px rgba(37,211,102,0.1); }
+
+        .community-card-icon {
+            width: 52px; height: 52px;
+            border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        .tg .community-card-icon { background: rgba(34,158,217,0.15); color: var(--accent-tg); border: 1px solid rgba(34,158,217,0.2); }
+        .wa .community-card-icon { background: rgba(37,211,102,0.12); color: var(--accent-wa); border: 1px solid rgba(37,211,102,0.2); }
+
+        .community-card-body { flex: 1; }
+        .community-tag {
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 3px 9px;
+            border-radius: 100px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .tg .community-tag { background: rgba(34,158,217,0.12); color: var(--accent-tg); }
+        .wa .community-tag { background: rgba(37,211,102,0.1); color: var(--accent-wa); }
+
+        .community-card-body h3 { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px; color: var(--text-primary); }
+        .community-card-body p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.65; }
+
+        .community-perks {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .perk {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+        .perk i { font-size: 0.65rem; }
+        .tg .perk i { color: var(--accent-tg); }
+        .wa .perk i { color: var(--accent-wa); }
+
+        .community-cta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .tg .community-cta { background: var(--accent-tg); box-shadow: 0 0 20px rgba(34,158,217,0.3); }
+        .tg .community-cta:hover { box-shadow: 0 0 30px rgba(34,158,217,0.5); }
+        .wa .community-cta { background: var(--accent-wa); box-shadow: 0 0 20px rgba(37,211,102,0.25); }
+        .wa .community-cta:hover { box-shadow: 0 0 30px rgba(37,211,102,0.45); }
+        .community-cta i { font-size: 0.9rem; }
+
+        /* Members count pill */
+        .members-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--bg-surface2);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+        .members-pill i { font-size: 0.6rem; color: var(--accent-green); }
+
+        /* ─── FORM ─── */
+        .form-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+            animation: fadeUp 0.5s 0.4s ease both;
+        }
+        .form-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+        .form-card-header .icon { width: 36px; height: 36px; background: var(--accent-green-dim); border: 1px solid var(--border-accent); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--accent-green); font-size: 0.9rem; }
+        .form-card-header h2 { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+        .form-card-header span { font-size: 0.8rem; color: var(--text-secondary); font-weight: 400; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (max-width: 540px) { .form-row { grid-template-columns: 1fr; } }
+
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: var(--bg-surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            padding: 0 14px;
+            height: 44px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent-green); box-shadow: 0 0 0 3px var(--accent-green-dim); }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B949E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            cursor: pointer;
+        }
+        .form-select option { background: var(--bg-surface2); }
+
+        .form-textarea { height: 120px; padding: 12px 14px; resize: vertical; }
+
+        .btn-submit {
+            width: 100%;
+            height: 50px;
+            background: var(--accent-green);
+            color: #0D1117;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 0 24px var(--accent-green-glow);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-submit::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%); }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 0 40px var(--accent-green-glow), 0 8px 24px rgba(0,0,0,0.3); }
+
+        /* Success message */
+        .form-success {
+            display: none;
+            text-align: center;
+            padding: 32px;
+        }
+        .form-success.show { display: block; }
+        .success-icon { font-size: 2.5rem; color: var(--accent-green); margin-bottom: 12px; }
+        .form-success h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; }
+        .form-success p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* ─── FAQ ─── */
+        .faq-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 24px;
+            animation: fadeUp 0.5s 0.5s ease both;
+        }
+
+        .faq-item { border-bottom: 1px solid var(--border); }
+        .faq-item:last-child { border-bottom: none; }
+
+        .faq-trigger {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            text-align: left;
+            transition: background 0.2s;
+        }
+        .faq-trigger:hover { background: rgba(240,246,252,0.03); }
+
+        .faq-q {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .faq-icon {
+            width: 28px; height: 28px;
+            background: var(--bg-surface2);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            transition: all 0.25s;
+        }
+        .faq-item.open .faq-icon { background: var(--accent-green-dim); border-color: var(--border-accent); color: var(--accent-green); transform: rotate(45deg); }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+        .faq-item.open .faq-answer { max-height: 200px; }
+        .faq-answer-inner {
+            padding: 0 24px 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.75;
+        }
+        .faq-answer-inner a { color: var(--accent-green); text-decoration: none; }
+
+        /* ─── FOOTER ─── */
+        footer { background: var(--bg-surface); border-top: 1px solid var(--border); text-align: center; padding: 28px 24px; position: relative; z-index: 1; }
+        footer p { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 12px; }
+        footer .footer-links { display: flex; justify-content: center; gap: 16px; }
+        footer a { color: var(--text-muted); font-size: 1rem; transition: color 0.2s; text-decoration: none; }
+        footer a:hover { color: var(--accent-green); }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="/">
+            <img src="{{ url_for('static', filename='logo.svg') }}" alt="DilarFoot">
+            <span class="brand-text">DYLAR<span>*</span>FOOT</span>
+        </a>
+        <ul class="navbar-links">
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/about">À propos</a></li>
+            <li><a href="/contact" class="active">Contact</a></li>
+        </ul>
+        <button class="navbar-hamburger" onclick="toggleMenu()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/">Accueil</a>
+        <a href="/about">À propos</a>
+        <a href="/contact">Contact</a>
+    </div>
+
+    <!-- PROMO TICKER -->
+    <div class="promo-bar">
+        <div class="promo-bar-label"><i class="fas fa-gift"></i><span>1xBet</span></div>
+        <div class="promo-bar-ticker">
+            <div class="ticker-track">
+                <span class="ticker-item"><span class="t-dot"></span><span>🎁 Bonus de bienvenue exclusif</span><span class="t-accent">jusqu'à 300€ offerts</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>Inscrivez-vous avec le code</span><span class="t-promo">ALYD1108</span><span>et doublez votre 1er dépôt</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>🔥 Offre limitée — Profitez-en maintenant</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>Code promo exclusif DilarFoot :</span><span class="t-promo">ALYD1108</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>🏆 Paris sportifs · Casino · Live</span><span class="t-accent">Rejoignez des millions de joueurs</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>🎁 Bonus de bienvenue exclusif</span><span class="t-accent">jusqu'à 300€ offerts</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>Inscrivez-vous avec le code</span><span class="t-promo">ALYD1108</span><span>et doublez votre 1er dépôt</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>🔥 Offre limitée — Profitez-en maintenant</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>Code promo exclusif DilarFoot :</span><span class="t-promo">ALYD1108</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>🏆 Paris sportifs · Casino · Live</span><span class="t-accent">Rejoignez des millions de joueurs</span><span class="t-dot"></span></span>
+            </div>
+        </div>
+        <div class="promo-bar-actions">
+            <div class="promo-code-pill" id="promoCodePill" onclick="copyPromoCode()">
+                <span class="pill-text">ALYD1108</span>
+                <span class="copied-flash">✓ Copié !</span>
+            </div>
+            <button class="btn-promo-cta" onclick="copyPromoCode()">S'inscrire →</button>
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge"><i class="fas fa-paper-plane"></i> Contact</div>
+        <h1>Rejoignez la<br><span class="hl">communauté</span></h1>
+        <p>Coupons gratuits quotidiens, alertes avant les matchs et échanges avec d'autres passionnés — tout ça vous attend.</p>
+    </section>
+
+    <main class="main-container">
+
+        <!-- COMMUNITY -->
+        <div class="section-label">Nos canaux communauté</div>
+        <div class="community-grid">
+
+            <!-- TELEGRAM -->
+            <div class="community-card tg">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div class="community-card-icon"><i class="fab fa-telegram"></i></div>
+                    <span class="members-pill"><i class="fas fa-circle"></i> Canal actif</span>
+                </div>
+                <div class="community-card-body">
+                    <span class="community-tag">Telegram</span>
+                    <h3>Canal Coupons & Alertes</h3>
+                    <p>Recevez nos coupons gratuits directement dans Telegram. Alertes avant les grands matchs, analyses express et pronostics du jour.</p>
+                </div>
+                <div class="community-perks">
+                    <div class="perk"><i class="fas fa-check-circle"></i> Coupons gratuits quotidiens</div>
+                    <div class="perk"><i class="fas fa-check-circle"></i> Alertes matchs en direct</div>
+                    <div class="perk"><i class="fas fa-check-circle"></i> Pronostics exclusifs</div>
+                </div>
+                <a href="https://t.me/VOTRE_CANAL" target="_blank" rel="noopener" class="community-cta">
+                    Rejoindre le canal <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- WHATSAPP -->
+            <div class="community-card wa">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div class="community-card-icon"><i class="fab fa-whatsapp"></i></div>
+                    <span class="members-pill"><i class="fas fa-circle"></i> Groupe actif</span>
+                </div>
+                <div class="community-card-body">
+                    <span class="community-tag">WhatsApp</span>
+                    <h3>Groupe Communauté</h3>
+                    <p>Échangez avec d'autres passionnés, partagez vos coupons et discutez des matchs du moment dans un groupe actif et bienveillant.</p>
+                </div>
+                <div class="community-perks">
+                    <div class="perk"><i class="fas fa-check-circle"></i> Partage de coupons membres</div>
+                    <div class="perk"><i class="fas fa-check-circle"></i> Discussions matchs</div>
+                    <div class="perk"><i class="fas fa-check-circle"></i> Communauté active</div>
+                </div>
+                <a href="https://chat.whatsapp.com/VOTRE_LIEN" target="_blank" rel="noopener" class="community-cta">
+                    Rejoindre le groupe <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- CONTACT FORM -->
+        <div class="section-label">Nous écrire</div>
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="icon"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <h2>Formulaire de contact</h2>
+                    <span>Question, partenariat, signalement — on vous répond rapidement</span>
+                </div>
+            </div>
+
+            <div id="contactForm">
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom:0">
+                        <label class="form-label">Nom</label>
+                        <input type="text" class="form-input" id="fname" placeholder="Votre nom">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="femail" placeholder="votre@email.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sujet</label>
+                    <select class="form-select" id="fsubject">
+                        <option value="">Choisir un sujet</option>
+                        <option value="question">Question générale</option>
+                        <option value="vip">Code VIP</option>
+                        <option value="partenariat">Partenariat</option>
+                        <option value="bug">Signalement de bug</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-textarea" id="fmessage" placeholder="Décrivez votre demande..."></textarea>
+                </div>
+                <button class="btn-submit" onclick="submitForm()">
+                    <i class="fas fa-paper-plane"></i>
+                    Envoyer le message
+                </button>
+            </div>
+
+            <div class="form-success" id="formSuccess">
+                <div class="success-icon"><i class="fas fa-circle-check"></i></div>
+                <h3>Message envoyé !</h3>
+                <p>Merci pour votre message. Nous vous répondrons dans les plus brefs délais.</p>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="section-label">Questions fréquentes</div>
+        <div class="faq-card">
+
+            <div class="faq-item">
+                <button class="faq-trigger" onclick="toggleFaq(this)">
+                    <span class="faq-q">Les prédictions DilarFoot sont-elles gratuites ?</span>
+                    <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Oui, toutes les prédictions de base sont 100% gratuites et accessibles sans inscription. Seul le score exact prédit est réservé aux membres VIP.</div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-trigger" onclick="toggleFaq(this)">
+                    <span class="faq-q">Comment obtenir un code VIP ?</span>
+                    <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Les codes VIP sont distribués via notre <a href="https://t.me/VOTRE_CANAL" target="_blank">canal Telegram</a> et notre groupe WhatsApp. Rejoignez la communauté pour en bénéficier gratuitement.</div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-trigger" onclick="toggleFaq(this)">
+                    <span class="faq-q">À quelle fréquence les prédictions sont-elles mises à jour ?</span>
+                    <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Les prédictions sont générées en temps réel à chaque demande, basées sur les dernières données statistiques disponibles pour chaque équipe.</div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-trigger" onclick="toggleFaq(this)">
+                    <span class="faq-q">Quelles compétitions sont couvertes ?</span>
+                    <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">DilarFoot couvre actuellement 8 compétitions : Premier League, Ligue 1, La Liga, Serie A, Bundesliga, UEFA Champions League, Primeira Liga et Championship. D'autres ligues seront ajoutées prochainement.</div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-trigger" onclick="toggleFaq(this)">
+                    <span class="faq-q">Comment signaler un bug ou suggérer une amélioration ?</span>
+                    <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Utilisez le formulaire ci-dessus en sélectionnant "Signalement de bug" ou "Autre". Vous pouvez aussi nous contacter directement via Telegram pour un retour plus rapide.</div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 DilarFoot — Prédictions Foot · Tous droits réservés</p>
+        <div class="footer-links">
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://t.me/VOTRE_CANAL" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+
+        function toggleFaq(btn) {
+            const item = btn.closest('.faq-item');
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        }
+
+        function submitForm() {
+            const name = document.getElementById('fname').value.trim();
+            const email = document.getElementById('femail').value.trim();
+            const subject = document.getElementById('fsubject').value;
+            const message = document.getElementById('fmessage').value.trim();
+            if (!name || !email || !subject || !message) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+            document.getElementById('contactForm').style.display = 'none';
+            document.getElementById('formSuccess').classList.add('show');
+        }
+
+        function copyPromoCode() {
+            const CODE = 'ALYD1108';
+            const pill = document.getElementById('promoCodePill');
+            function flashCopied() { pill.classList.add('copied'); setTimeout(() => pill.classList.remove('copied'), 1800); }
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(CODE).then(flashCopied).catch(fallback);
+            } else { fallback(); }
+            function fallback() {
+                const ta = document.createElement('textarea');
+                ta.value = CODE;
+                ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+                document.body.appendChild(ta); ta.focus(); ta.select();
+                try { document.execCommand('copy'); flashCopied(); } catch(e) { alert('Code promo : ' + CODE); }
+                document.body.removeChild(ta);
+            }
+        }
+    </script>
+</body>
+</html>

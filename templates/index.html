@@ -5,615 +5,1472 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Prédictions football gratuites pour Premier League, Ligue 1, Primeira Liga et plus !">
     <meta name="keywords" content="prédictions foot, Premier League, Primeira Liga, Championship">
-    <title>DilarFoot</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ballon.png') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>DilarFoot — Prédictions IA</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-bg: #1B263B;
-            --secondary-bg: #F5F5F5;
-            --text-color: #333;
-            --highlight: #D4AF37;
-            --button-primary: #2E8B57;
-            --button-secondary: #8B0000;
+            --bg-primary: #0D1117;
+            --bg-surface: #161B22;
+            --bg-surface2: #1F2937;
+            --bg-surface3: #263347;
+            --accent-green: #00FF87;
+            --accent-green-dim: rgba(0, 255, 135, 0.12);
+            --accent-green-glow: rgba(0, 255, 135, 0.35);
+            --accent-gold: #FFD700;
+            --accent-gold-dim: rgba(255, 215, 0, 0.12);
+            --accent-gold-glow: rgba(255, 215, 0, 0.3);
+            --accent-promo: #FF6B35;
+            --accent-promo-dim: rgba(255, 107, 53, 0.15);
+            --text-primary: #F0F6FC;
+            --text-secondary: #8B949E;
+            --text-muted: #484F58;
+            --border: rgba(240, 246, 252, 0.07);
+            --border-accent: rgba(0, 255, 135, 0.25);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --ticker-height: 44px;
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
-            background-size: cover;
-            background-attachment: fixed;
-            color: var(--text-color);
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s, color 0.3s;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Syne', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        body.dark-theme {
-            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
-            color: #F5F5F5;
+
+        /* Background texture */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,255,135,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,100,255,0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
-        body.dark-theme .form-container, body.dark-theme .match-card {
-            background: #2C3E50;
-            color: #F5F5F5;
-        }
-        body.dark-theme .form-label, body.dark-theme .predictions {
-            color: #F5F5F5;
-        }
+
+        /* ─── NAVBAR ─── */
         .navbar {
-            background-color: var(--primary-bg);
-            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(13, 17, 23, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
+
         .navbar-brand {
-            color: var(--highlight) !important;
-            font-weight: 600;
-            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
         }
-        .navbar-nav .nav-link {
-            color: #F5F5F5 !important;
-            font-weight: 400;
-            transition: color 0.3s;
-        }
-        .navbar-nav .nav-link:hover {
-            color: var(--highlight) !important;
-        }
+
         .navbar-brand img {
-            transition: transform 0.3s ease;
+            width: 28px;
+            height: 28px;
+            transition: transform 0.6s ease;
         }
-        .navbar-brand img:hover {
-            transform: rotate(360deg);
-        }
-        .navbar-toggler .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
-        }
-        .theme-toggle {
-            color: #F5F5F5;
+
+        .brand-text {
             font-size: 1.2rem;
-            cursor: pointer;
-            transition: color 0.3s;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
         }
-        .theme-toggle:hover {
-            color: var(--highlight);
+        .brand-text span { color: var(--accent-green); }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            list-style: none;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #fff;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 2.5rem;
+
+        .navbar-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
             font-weight: 600;
-            animation: fadeInDown 1s ease-in-out;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: color 0.2s;
         }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
+        .navbar-links a:hover { color: var(--accent-green); }
+
+        .navbar-hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            padding: 4px;
+        }
+        .navbar-hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            gap: 16px;
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* ─── HERO ─── */
+        .hero {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 60px 24px 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--accent-green-dim);
+            border: 1px solid var(--border-accent);
+            color: var(--accent-green);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 24px;
+            animation: fadeUp 0.6s ease both;
+        }
+        .hero-badge i { font-size: 0.7rem; }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 6vw, 3.8rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-bottom: 18px;
+            animation: fadeUp 0.6s 0.1s ease both;
+        }
+        .hero h1 .hl { color: var(--accent-green); }
+
+        .hero p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            max-width: 500px;
+            margin: 0 auto 0;
+            line-height: 1.6;
+            animation: fadeUp 0.6s 0.2s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .carousel {
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            margin-bottom: 30px;
+
+        /* ─── CONTAINER ─── */
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+            position: relative;
+            z-index: 1;
         }
-        .carousel-item {
-            height: 400px;
-            background-size: cover;
-            background-position: center;
+
+        /* ─── FORM CARD ─── */
+        .form-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+            animation: fadeUp 0.6s 0.3s ease both;
+        }
+
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .form-card-header .icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent-green-dim);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            background-color: #2c3e50;
-        }
-        .carousel-item h3 {
-            font-size: 2rem;
-            font-weight: 600;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px;
-            border-radius: 10px;
-        }
-        .carousel-control-prev, .carousel-control-next {
-            width: 5%;
-        }
-        .carousel-indicators {
-            bottom: 10px;
-        }
-        .carousel-indicators [data-bs-target] {
-            background-color: #fff;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        .intro-text {
-            text-align: center;
-            color: #ecf0f1;
-            margin-bottom: 30px;
-            font-size: 1.2rem;
-            font-weight: 300;
-        }
-        .promo-section {
-            background: #fff;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
-            text-align: center;
-            animation: slideIn 0.8s ease-in-out;
-        }
-        body.dark-theme .promo-section {
-            background: #2C3E50;
-            color: #F5F5F5;
-        }
-        .promo-section h3 {
-            color: var(--highlight);
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-        .promo-code {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--button-primary);
-            background: #f1f1f1;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
-        body.dark-theme .promo-code {
-            background: #3A506B;
-        }
-        .btn-copy {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
+            color: var(--accent-green);
             font-size: 0.9rem;
-            font-weight: 600;
-            border-radius: 5px;
-            margin-right: 10px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-        .btn-copy:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-        .btn-register {
-            background-color: var(--button-primary);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .btn-register:hover {
-            background-color: #228B22;
-            transform: scale(1.05);
-        }
-        .form-container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
-            animation: slideIn 0.8s ease-in-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .form-label {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        .form-select {
-            border-radius: 8px;
-            padding: 10px;
+
+        .form-card-header h2 {
             font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
         }
+        .form-card-header span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .form-league-row {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-teams-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-teams-row { grid-template-columns: 1fr; }
+        }
+
+        .team-input-wrapper {
+            position: relative;
+        }
+
+        .team-badge {
+            position: absolute;
+            top: -8px;
+            left: 12px;
+            background: var(--bg-surface2);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 100px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            z-index: 1;
+        }
+        .team-badge.home { color: var(--accent-green); border-color: var(--border-accent); background: var(--accent-green-dim); }
+        .team-badge.away { color: #60A5FA; border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.08); }
+
+        .vs-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            padding-top: 24px;
+        }
+
+        /* Select2 custom */
+        .select2-container { width: 100% !important; }
+
         .select2-container--default .select2-selection--single {
-            border-radius: 8px;
-            border: 1px solid #ced4da;
-            height: 38px;
-            padding: 5px;
+            background: var(--bg-surface2) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: var(--radius-sm) !important;
+            height: 44px !important;
+            padding: 0 12px !important;
+            transition: border-color 0.2s;
+        }
+        .select2-container--default.select2-container--focus .select2-selection--single,
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: var(--accent-green) !important;
+            box-shadow: 0 0 0 3px var(--accent-green-dim) !important;
+            outline: none !important;
         }
         .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 28px;
+            color: var(--text-primary) !important;
+            line-height: 44px !important;
+            font-family: 'Syne', sans-serif !important;
+            font-size: 0.9rem !important;
+            padding: 0 !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: var(--text-muted) !important;
         }
         .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 38px;
+            height: 44px !important;
+            right: 10px !important;
         }
-        .error-message {
-            color: #e74c3c;
+        .select2-container--default .select2-selection--single .select2-selection__arrow b {
+            border-color: var(--text-secondary) transparent transparent transparent !important;
+        }
+        .select2-dropdown {
+            background: var(--bg-surface2) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: var(--radius-md) !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6) !important;
+            font-family: 'Syne', sans-serif !important;
+        }
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            background: var(--bg-surface) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: var(--radius-sm) !important;
+            color: var(--text-primary) !important;
+            font-family: 'Syne', sans-serif !important;
+            padding: 8px 12px !important;
+        }
+        .select2-container--default .select2-results__option {
+            color: var(--text-secondary) !important;
+            font-size: 0.875rem !important;
+            padding: 8px 12px !important;
+        }
+        .select2-container--default .select2-results__option--highlighted {
+            background: var(--accent-green-dim) !important;
+            color: var(--accent-green) !important;
+        }
+        .select2-container--default .select2-results__option--selected {
+            background: var(--bg-surface3) !important;
+            color: var(--text-primary) !important;
+        }
+        .select2-container--default .select2-results__group {
+            color: var(--text-muted) !important;
+            font-size: 0.7rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.1em !important;
+            text-transform: uppercase !important;
+            padding: 8px 12px 4px !important;
+        }
+
+        .form-select-native {
+            width: 100%;
+            background: var(--bg-surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'Syne', sans-serif;
             font-size: 0.9rem;
+            padding: 0 12px;
+            height: 44px;
+            appearance: none;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B949E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+        .form-select-native:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 3px var(--accent-green-dim);
+        }
+        .form-select-native option { background: var(--bg-surface2); }
+
+        /* Error */
+        .error-msg {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #F87171;
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Buttons */
+        .btn-predict {
+            width: 100%;
+            height: 52px;
+            background: var(--accent-green);
+            color: #0D1117;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 0 24px var(--accent-green-glow);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-predict::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px var(--accent-green-glow), 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .btn-predict:active { transform: translateY(0); }
+        .btn-predict:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-predict .ai-badge {
+            background: rgba(0,0,0,0.2);
+            border-radius: 100px;
+            padding: 2px 8px;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+        }
+
+        .btn-reset {
+            width: 100%;
+            height: 44px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
             margin-top: 10px;
+            text-decoration: none;
+        }
+        .btn-reset:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        /* Spinner */
+        .spinner-wrap {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        .spinner-wrap.active { display: block; }
+        .spinner-ring {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent-green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner-wrap p { color: var(--text-secondary); font-size: 0.85rem; }
+
+        /* ─── RESULT CARD ─── */
+        .result-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 24px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        /* Scoreboard Header */
+        .scoreboard {
+            background: linear-gradient(135deg, #0D1117 0%, #161B22 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 32px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+        }
+        .scoreboard::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+        }
+
+        .team-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .team-block.away { align-items: center; }
+
+        .team-logo-wrap {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-surface2);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: transform 0.4s ease;
+        }
+        .team-logo-wrap:hover { transform: scale(1.08); }
+        .team-logo-wrap img { width: 40px; height: 40px; object-fit: contain; }
+
+        .team-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .score-center {
             text-align: center;
         }
-        .match-card {
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            animation: fadeIn 0.5s ease-in-out;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 20px;
+        .score-vs {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
         }
-        .match-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        .score-badge {
+            background: var(--accent-green-dim);
+            border: 1px solid var(--border-accent);
+            color: var(--accent-green);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 100px;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        /* Predictions Body */
+        .predictions-body {
+            padding: 28px 32px;
         }
-        .match-title {
-            font-weight: 600;
-            color: var(--highlight);
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+
+        .section-title {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            justify-content: center;
+            gap: 8px;
         }
-        .team-logo {
-            width: 50px;
-            height: 50px;
-            transition: transform 0.3s ease;
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
         }
-        .team-logo:hover {
-            transform: rotate(360deg);
-        }
-        .predictions {
-            font-size: 1rem;
-            color: #2c3e50;
-        }
-        .predictions span {
-            display: flex;
-            align-items: center;
+
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin: 10px 0;
+            margin-bottom: 24px;
         }
+        @media (max-width: 600px) {
+            .prediction-grid { grid-template-columns: 1fr; }
+        }
+
+        .pred-item {
+            background: var(--bg-surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            transition: border-color 0.2s;
+        }
+        .pred-item:hover { border-color: rgba(240,246,252,0.15); }
+
+        .pred-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pred-label i { color: var(--accent-green); font-size: 0.65rem; }
+
+        .pred-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+        .pred-value.green { color: var(--accent-green); }
+        .pred-value.gold { color: var(--accent-gold); }
+
+        /* Gauge */
+        .gauge-wrap {
+            margin-top: 8px;
+        }
+        .gauge-track {
+            height: 4px;
+            background: var(--bg-primary);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+        .gauge-fill {
+            height: 100%;
+            border-radius: 100px;
+            background: var(--accent-green);
+            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 0;
+        }
+        .gauge-fill.gold { background: var(--accent-gold); }
+        .gauge-fill.blue { background: #60A5FA; }
+
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+        }
+        .gauge-labels span {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* 3-way result bar */
+        .result-bar {
+            margin-top: 8px;
+        }
+        .result-bar-track {
+            height: 6px;
+            border-radius: 100px;
+            overflow: hidden;
+            display: flex;
+            gap: 2px;
+        }
+        .rb-home { background: var(--accent-green); transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
+        .rb-draw { background: var(--accent-gold); transition: width 1.2s 0.1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .rb-away { background: #60A5FA; transition: width 1.2s 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+        .result-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+        }
+        .result-bar-labels span {
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+        .result-bar-labels .l-home { color: var(--accent-green); }
+        .result-bar-labels .l-draw { color: var(--accent-gold); text-align: center; flex: 1; }
+        .result-bar-labels .l-away { color: #60A5FA; }
+
+        /* Stats section */
         .stats-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 10px;
+            background: var(--bg-surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 20px;
         }
-        body.dark-theme .stats-section {
-            background: #3A506B;
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
-        .stats-section h4 {
-            font-size: 1.2rem;
-            color: var(--highlight);
+        @media (max-width: 500px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+
+        .stat-team-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .stat-row {
             margin-bottom: 10px;
         }
-        .stats-section p {
-            margin: 5px 0;
+        .stat-row-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
         }
-        .share-buttons {
-            margin-top: 20px;
-            text-align: center;
+        .stat-row-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
         }
-        .share-buttons a {
-            color: #fff;
-            font-size: 1.2rem;
-            margin: 0 10px;
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+        .stat-row-val {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-secondary);
         }
-        .share-buttons .whatsapp { background-color: #25D366; }
-        .share-buttons .telegram { background-color: #0088cc; }
-        .share-buttons a:hover {
-            opacity: 0.8;
+
+        /* VIP Section */
+        .vip-section {
+            background: var(--bg-surface2);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
         }
-        .vip-message {
-            color: #e67e22;
-            font-style: italic;
+        .vip-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+        }
+
+        .vip-lock-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin: 10px 0;
+            gap: 14px;
         }
-        .vip-form {
+
+        .vip-lock-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-gold-dim);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .vip-lock-text {
+            flex: 1;
+        }
+        .vip-lock-text strong {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            margin-bottom: 2px;
+        }
+        .vip-lock-text span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .btn-vip-unlock {
+            background: var(--accent-gold);
+            color: #0D1117;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 9px 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 16px var(--accent-gold-glow);
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+        }
+        .btn-vip-unlock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 28px var(--accent-gold-glow);
+        }
+
+        .vip-form-wrap {
+            display: none;
+            margin-top: 16px;
+            animation: fadeUp 0.3s ease both;
+        }
+        .vip-form-wrap.open { display: block; }
+
+        .vip-input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .vip-input {
+            flex: 1;
+            height: 42px;
+            background: var(--bg-primary);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            padding: 0 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .vip-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px var(--accent-gold-dim);
+        }
+        .vip-input::placeholder { color: var(--text-muted); }
+
+        .btn-vip-validate {
+            height: 42px;
+            background: var(--accent-gold);
+            color: #0D1117;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 800;
+            padding: 0 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-vip-validate:hover { opacity: 0.9; }
+
+        .vip-error {
             display: none;
             margin-top: 10px;
-            animation: slideIn 0.5s ease-in-out;
+            font-size: 0.78rem;
+            color: #F87171;
+            display: none;
+            align-items: center;
+            gap: 6px;
         }
-        .vip-form.active {
-            display: block;
+        .vip-error.show { display: flex; }
+
+        .vip-unlocked-result {
+            display: none;
+            margin-top: 16px;
         }
-        .btn-primary {
-            background-color: var(--button-primary);
+        .vip-unlocked-result.show { display: block; }
+        .vip-unlocked-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            text-align: center;
+            padding: 16px;
+            background: var(--accent-gold-dim);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+
+        /* Share */
+        .share-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .btn-share {
+            flex: 1;
+            height: 40px;
             border: none;
-            padding: 12px;
-            font-size: 1rem;
+            border-radius: var(--radius-sm);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-share.whatsapp { background: rgba(37,211,102,0.12); color: #25D366; border: 1px solid rgba(37,211,102,0.2); }
+        .btn-share.telegram { background: rgba(0,136,204,0.12); color: #0088cc; border: 1px solid rgba(0,136,204,0.2); }
+        .btn-share:hover { opacity: 0.8; transform: translateY(-1px); }
+
+        /* ─── PROMO TICKER BAR ─── */
+        .promo-bar {
+            position: sticky;
+            top: 64px; /* juste sous la navbar */
+            z-index: 99;
+            height: var(--ticker-height);
+            background: linear-gradient(90deg, #1A0800 0%, #2D1000 40%, #2D1000 60%, #1A0800 100%);
+            border-bottom: 1px solid rgba(255,107,53,0.4);
+            box-shadow: 0 2px 20px rgba(255,107,53,0.15);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Glow pulse sur la bordure */
+        .promo-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0; right: 0;
+            height: 1px;
+            background: var(--accent-promo);
+            animation: barGlow 2.5s ease-in-out infinite;
+        }
+        @keyframes barGlow {
+            0%, 100% { opacity: 0.4; box-shadow: none; }
+            50% { opacity: 1; box-shadow: 0 0 10px var(--accent-promo); }
+        }
+
+        /* Label fixe gauche */
+        .promo-bar-label {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 16px;
+            height: 100%;
+            background: var(--accent-promo);
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+            padding-right: 24px;
+        }
+
+        /* Zone ticker scrollante */
+        .promo-bar-ticker {
+            flex: 1;
+            overflow: hidden;
+            height: 100%;
+            position: relative;
+            mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
+        }
+
+        .ticker-track {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            white-space: nowrap;
+            animation: tickerScroll 28s linear infinite;
+            gap: 0;
+        }
+        .promo-bar:hover .ticker-track { animation-play-state: paused; }
+
+        @keyframes tickerScroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 32px;
+            font-size: 0.78rem;
             font-weight: 600;
-            border-radius: 8px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            color: var(--text-secondary);
         }
-        .btn-primary:hover {
-            background-color: #228B22;
-            transform: scale(1.05);
+        .ticker-item .t-accent { color: var(--text-primary); font-weight: 800; }
+        .ticker-item .t-promo  { color: var(--accent-promo); font-weight: 800; }
+        .ticker-item .t-dot {
+            width: 4px; height: 4px;
+            background: rgba(255,107,53,0.4);
+            border-radius: 50%;
+            flex-shrink: 0;
         }
-        .btn-primary:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
+
+        /* Zone droite fixe : code + CTA */
+        .promo-bar-actions {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px 0 8px;
+            height: 100%;
+            border-left: 1px solid rgba(255,107,53,0.2);
         }
-        .btn-secondary {
-            background-color: var(--button-secondary);
-            border: none;
-            padding: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+
+        .promo-code-pill {
+            background: rgba(255,107,53,0.12);
+            border: 1px dashed rgba(255,107,53,0.5);
+            border-radius: 100px;
+            padding: 4px 12px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--accent-promo);
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            position: relative;
         }
-        .btn-secondary:hover {
-            background-color: #A52A2A;
-            transform: scale(1.05);
+        .promo-code-pill:hover {
+            background: rgba(255,107,53,0.22);
+            border-color: var(--accent-promo);
         }
-        .btn-vip {
-            background-color: #D4AF37;
+        .promo-code-pill .copied-flash {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0,255,135,0.15);
+            border-radius: 100px;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-green);
+            font-size: 0.72rem;
+        }
+        .promo-code-pill.copied .copied-flash { display: flex; }
+        .promo-code-pill.copied .pill-text { visibility: hidden; }
+
+        .btn-promo-cta {
+            background: var(--accent-promo);
             color: #fff;
             border: none;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            border-radius: 100px;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            letter-spacing: 0.03em;
+            box-shadow: 0 0 14px rgba(255,107,53,0.35);
         }
-        .btn-vip:hover {
-            background-color: #B8972E;
-            transform: scale(1.05);
+        .btn-promo-cta:hover {
+            box-shadow: 0 0 22px rgba(255,107,53,0.6);
+            transform: scale(1.04);
         }
-        .highlight {
-            color: var(--button-primary);
-            font-weight: 600;
+
+        @media (max-width: 640px) {
+            .promo-bar-label span { display: none; }
+            .promo-bar-label { padding: 0 14px 0 12px; }
+            .btn-promo-cta { display: none; }
+            .promo-code-pill { font-size: 0.72rem; }
         }
-        .spinner {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-        .spinner i {
-            font-size: 2rem;
-            color: var(--highlight);
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+
+        /* ─── FOOTER ─── */
         footer {
-            background-color: var(--primary-bg);
-            color: #F5F5F5;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
             text-align: center;
-            padding: 20px 0;
-            margin-top: 40px;
+            padding: 28px 24px;
+            position: relative;
+            z-index: 1;
+        }
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+        }
+        footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
         }
         footer a {
-            color: var(--highlight);
-            margin: 0 10px;
-            font-size: 1.2rem;
-            transition: color 0.3s;
+            color: var(--text-muted);
+            font-size: 1rem;
+            transition: color 0.2s;
+            text-decoration: none;
         }
-        footer a:hover {
-            color: #F5F5F5;
+        footer a:hover { color: var(--accent-green); }
+
+        /* No data */
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
         }
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            .carousel-item {
-                height: 250px;
-            }
-            .carousel-item h3 {
-                font-size: 1.5rem;
-            }
-            .form-container, .match-card, .promo-section {
-                padding: 20px;
-            }
-            .match-title {
-                font-size: 1.2rem;
-            }
-            .team-logo {
-                width: 40px;
-                height: 40px;
-            }
-            .predictions {
-                font-size: 0.9rem;
-            }
-            .btn-primary, .btn-secondary, .btn-copy, .btn-register {
-                font-size: 0.9rem;
-                padding: 10px;
-            }
-        }
-        @media (max-width: 576px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-            .carousel-item {
-                height: 200px;
-            }
-            .carousel-item h3 {
-                font-size: 1.2rem;
-            }
-            .intro-text {
-                font-size: 1rem;
-            }
-            .form-container, .match-card, .promo-section {
-                padding: 15px;
-            }
-            .match-title {
-                font-size: 1rem;
-            }
-            .team-logo {
-                width: 30px;
-                height: 30px;
-            }
-        }
+        .no-data i { font-size: 2rem; color: var(--text-muted); margin-bottom: 12px; display: block; }
+        .no-data p { font-size: 0.9rem; }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/"><img src="{{ url_for('static', filename='ballon.png') }}" alt="Ballon Logo" style="width: 30px; height: 30px; margin-right: 10px; border-radius: 50px;">DYLAR*FOOT</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Accueil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">À propos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
-                </ul>
-                <span class="theme-toggle" onclick="toggleTheme()">
-                    <i class="fas fa-moon"></i>
-                </span>
-            </div>
-        </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="/">
+            <img src="{{ url_for('static', filename='logo.svg') }}" alt="DilarFoot">
+            <span class="brand-text">DYLAR<span>*</span>FOOT</span>
+        </a>
+        <ul class="navbar-links" id="desktopNav">
+ <li><a href="{{ url_for('index') }}">Accueil</a></li>
+<li><a href="{{ url_for('about') }}">À propos</a></li>
+<li><a href="{{ url_for('contact') }}">Contact</a></li>
+        </ul>
+        <button class="navbar-hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
     </nav>
+    <div class="mobile-menu" id="mobileMenu">
+<li><a href="{{ url_for('index') }}">Accueil</a></li>
+<li><a href="{{ url_for('about') }}">À propos</a></li>
+<li><a href="{{ url_for('contact') }}">Contact</a></li>
+    </div>
 
-    <div class="container">
-        <div id="carouselExample" class="carousel slide mb-4" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="2" aria-label="Slide 3"></button>
-            </div>
-            <div class="carousel-inner">
-                <div class="carousel-item active" style="background-image: url('https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
-                    <h3>Prédisez vos matchs préférés !</h3>
-                </div>
-                <div class="carousel-item" style="background-image: url('https://images.pexels.com/photos/399197/soccer-stadium-football-arena-399197.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
-                    <h3>Analyse basée sur les stats récentes</h3>
-                </div>
-                <div class="carousel-item" style="background-image: url('https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
-                    <h3>🎉 Offre Exclusive 1xBet! Profitez d'un bonus de bienvenue avec notre code promo: <div class="promo-code" id="promoCode">ALYD1108</div>
-                        <button class="btn-copy" onclick="copyPromoCode()">Copier le code</button>
-                    </h3>
-                </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+    <!-- PROMO TICKER BAR -->
+    <div class="promo-bar" id="promoBar">
+        <div class="promo-bar-label">
+            <i class="fas fa-gift"></i>
+            <span>1xBet</span>
         </div>
+        <div class="promo-bar-ticker">
+            <div class="ticker-track" id="tickerTrack">
+                <!-- Bloc 1 -->
+                <span class="ticker-item"><span class="t-dot"></span><span>🎁 Bonus de bienvenue exclusif</span><span class="t-accent">jusqu'à 300€ offerts</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>Inscrivez-vous sur 1xBet avec le code</span><span class="t-promo">ALYD1108</span><span>et doublez votre 1er dépôt</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>🔥 Offre limitée — Profitez-en maintenant</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>Code promo exclusif DilarFoot :</span><span class="t-promo">ALYD1108</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>🏆 Paris sportifs · Casino · Live</span><span class="t-accent">Rejoignez des millions de joueurs</span><span class="t-dot"></span></span>
+                <!-- Bloc 2 (clone pour boucle seamless) -->
+                <span class="ticker-item"><span class="t-dot"></span><span>🎁 Bonus de bienvenue exclusif</span><span class="t-accent">jusqu'à 300€ offerts</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>Inscrivez-vous sur 1xBet avec le code</span><span class="t-promo">ALYD1108</span><span>et doublez votre 1er dépôt</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>🔥 Offre limitée — Profitez-en maintenant</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>Code promo exclusif DilarFoot :</span><span class="t-promo">ALYD1108</span><span class="t-dot"></span></span>
+                <span class="ticker-item"><span class="t-dot"></span><span>🏆 Paris sportifs · Casino · Live</span><span class="t-accent">Rejoignez des millions de joueurs</span><span class="t-dot"></span></span>
+            </div>
+        </div>
+        <div class="promo-bar-actions">
+            <div class="promo-code-pill" id="promoCodePill" onclick="copyPromoCode()">
+                <span class="pill-text">ALYD1108</span>
+                <span class="copied-flash">✓ Copié !</span>
+            </div>
+            <button class="btn-promo-cta" onclick="shareOn1xbet()">S'inscrire →</button>
+        </div>
+    </div>
 
-        <div class="form-container">
-            <h5 class="m-0"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>Générer une prédiction</h5><br>
-            <form id="predictionForm" method="POST" onsubmit="showSpinner()">
-                <div class="mb-3">
-                    <label for="league_filter" class="form-label">Dylar!🎉Profitez d'un bonus de bienvenue sur 1xBet avec notre code promo (ALYD1108)</label>
-                    <select class="form-select" id="league_filter">
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge">
+            <i class="fas fa-bolt"></i>
+            Analyse IA en temps réel
+        </div>
+        <h1>Prédictions foot<br><span class="hl">ultra précises</span></h1>
+        <p>Analysez n'importe quel match en secondes grâce à notre moteur IA basé sur les données statistiques réelles.</p>
+    </section>
+
+    <!-- MAIN -->
+    <main class="main-container">
+
+        <!-- FORM -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+                <div>
+                    <h2>Générer une prédiction</h2>
+                    <span>Sélectionnez vos équipes et lancez l'analyse</span>
+                </div>
+            </div>
+
+            <form id="predictionForm" method="POST" onsubmit="handleSubmit()">
+                <!-- League filter -->
+                <div class="form-league-row">
+                    <label class="form-label" for="league_filter">Filtrer par compétition</label>
+                    <select class="form-select-native" id="league_filter">
                         <option value="">Toutes les compétitions</option>
                         {% for league in league_teams.keys() %}
                             <option value="{{ league }}">{{ league }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="mb-3">
-                    <label for="home_team" class="form-label">Équipe à domicile</label>
-                    <select class="form-select" id="home_team" name="home_team" required>
-                        <option value="">Choisir une équipe</option>
-                        {% for league, teams in league_teams.items() %}
-                            <optgroup label="{{ league }}">
-                                {% for team in teams %}
-                                    <option value="{{ team }}" {% if team == home_team %}selected{% endif %}>{{ team }}</option>
-                                {% endfor %}
-                            </optgroup>
-                        {% endfor %}
-                    </select>
+
+                <!-- Teams row -->
+                <div class="form-teams-row">
+                    <div class="team-input-wrapper">
+                        <span class="team-badge home">Domicile</span>
+                        <select id="home_team" name="home_team" required>
+                            <option value="">Choisir une équipe</option>
+                            {% for league, teams in league_teams.items() %}
+                                <optgroup label="{{ league }}">
+                                    {% for team in teams %}
+                                        <option value="{{ team }}" {% if team == home_team %}selected{% endif %}>{{ team }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="team-input-wrapper">
+                        <span class="team-badge away">Extérieur</span>
+                        <select id="away_team" name="away_team" required>
+                            <option value="">Choisir une équipe</option>
+                            {% for league, teams in league_teams.items() %}
+                                <optgroup label="{{ league }}">
+                                    {% for team in teams %}
+                                        <option value="{{ team }}" {% if team == away_team %}selected{% endif %}>{{ team }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="away_team" class="form-label">Équipe à l'extérieur</label>
-                    <select class="form-select" id="away_team" name="away_team" required>
-                        <option value="">Choisir une équipe</option>
-                        {% for league, teams in league_teams.items() %}
-                            <optgroup label="{{ league }}">
-                                {% for team in teams %}
-                                    <option value="{{ team }}" {% if team == away_team %}selected{% endif %}>{{ team }}</option>
-                                {% endfor %}
-                            </optgroup>
-                        {% endfor %}
-                    </select>
-                </div>
+
                 {% if error %}
-                    <div class="error-message">{{ error }}</div>
+                    <div class="error-msg"><i class="fas fa-circle-exclamation"></i> {{ error }}</div>
                 {% endif %}
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-50" id="submitBtn"><i class="fa-solid fa-robot me-2"></i>Prédire</button>
-                    <a href="/" class="btn btn-secondary w-50"><i class="fa-solid fa-rotate me-2"></i>Réinitialiser</a>
-                </div>
+
+                <button type="submit" class="btn-predict" id="submitBtn">
+                    <i class="fas fa-robot"></i>
+                    Lancer l'analyse
+                    <span class="ai-badge">IA</span>
+                </button>
+                <a href="/" class="btn-reset">
+                    <i class="fas fa-rotate"></i> Réinitialiser
+                </a>
             </form>
         </div>
 
-        <div class="spinner" id="spinner">
-            <i class="fas fa-spinner"></i>
+        <!-- SPINNER -->
+        <div class="spinner-wrap" id="spinner">
+            <div class="spinner-ring"></div>
+            <p>Analyse des données en cours...</p>
         </div>
 
         {% if predictions %}
-            <div class="match-card">
-                <div class="match-title">
-                    <img src="{{ home_logo }}" alt="{{ home_team }} logo" class="team-logo">
-                    {{ home_team }} vs {{ away_team }}
-                    <img src="{{ away_logo }}" alt="{{ away_team }} logo" class="team-logo">
+        <div class="result-card">
+
+            {% if predictions == "no_data" %}
+            <div class="no-data">
+                <i class="fas fa-database"></i>
+                <p>Pas assez de données historiques pour ce match.</p>
+            </div>
+            {% else %}
+
+            <!-- SCOREBOARD -->
+            <div class="scoreboard">
+                <div class="team-block">
+                    <div class="team-logo-wrap">
+                        <img src="{{ home_logo }}" alt="{{ home_team }}">
+                    </div>
+                    <div class="team-name">{{ home_team }}</div>
                 </div>
-                {% if predictions == "no_data" %}
-                    <div class="predictions text-danger">Pas assez de données historiques pour ce match.</div>
-                {% else %}
-                    <div class="predictions">
-                        <span><i class="fas fa-trophy"></i> <strong>Résultat final (V1 X V2):</strong> {{ predictions.result }}</span>
-                        <span><i class="fas fa-balance-scale"></i> <strong>Double chance :</strong> {{ predictions.double_chance }}</span>
-                        <span><i class="fas fa-futbol"></i> <strong>Nombre de buts estimé :</strong> {{ predictions.goals }}</span>
-                        <span><i class="fas fa-clock"></i> <strong>Équipe qui va gagner au moins une mi-temps:</strong> {{ predictions.half_winner }}</span>
-                        <span><i class="fas fa-users"></i> <strong>Les deux équipes marquent : </strong> {{ predictions.both_teams_score }} </span>
-                        <span><i class="fas fa-chart-line"></i> <strong>Plus/Moins de 2.5 buts :</strong> {{ predictions.over_under }}</span>
-                        <span class="vip-message"><i class="fas fa-futbol"></i> Score exact prédit : <a href="#" class="btn-vip" onclick="toggleVipForm(event, 'exact_score')">VIP</a></span>
-                        <div class="vip-form" id="vipForm">
-                            <input type="text" id="vipCode" class="form-control mb-2" placeholder="Entrez votre code VIP">
-                            <button class="btn btn-vip" onclick="validateVipCode(event)">Valider</button>
-                            <div id="vipError" class="error-message" style="display: none;">Code incorrect! Vérifiez votre code et ressayez. Inscrivez-vous avec le code promo ALYD1108</div>
+                <div class="score-center">
+                    <span class="score-vs">VS</span>
+                    <span class="score-badge">Prédiction IA</span>
+                </div>
+                <div class="team-block away">
+                    <div class="team-logo-wrap">
+                        <img src="{{ away_logo }}" alt="{{ away_team }}">
+                    </div>
+                    <div class="team-name">{{ away_team }}</div>
+                </div>
+            </div>
+
+            <!-- PREDICTIONS BODY -->
+            <div class="predictions-body">
+
+                <div class="section-title">Prédictions du match</div>
+
+                <div class="prediction-grid">
+
+                    <!-- Résultat final -->
+                    <div class="pred-item">
+                        <div class="pred-label"><i class="fas fa-trophy"></i> Résultat final (1X2)</div>
+                        <div class="pred-value green">{{ predictions.result }}</div>
+                        <div class="result-bar" id="resultBar">
+                            <div class="result-bar-track">
+                                <div class="rb-home" id="rbHome" style="width:0%"></div>
+                                <div class="rb-draw" id="rbDraw" style="width:0%"></div>
+                                <div class="rb-away" id="rbAway" style="width:0%"></div>
+                            </div>
+                            <div class="result-bar-labels">
+                                <span class="l-home">V1</span>
+                                <span class="l-draw">X</span>
+                                <span class="l-away">V2</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="stats-section">
-                        <h4>Statistiques des équipes</h4>
-                        <p><strong>{{ home_team }}</strong> - Buts marqués par match : {{ home_stats.goals_avg_scored }} | Buts encaissés par match : {{ home_stats.goals_avg_conceded }}</p>
-                        <p><strong>{{ away_team }}</strong> - Buts marqués par match : {{ away_stats.goals_avg_scored }} | Buts encaissés par match : {{ away_stats.goals_avg_conceded }}</p>
-                    </div>
-                    <div class="share-buttons">
-                        <a href="#" class="whatsapp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
-                        <a href="#" class="telegram" onclick="shareOnTelegram()"><i class="fab fa-telegram"></i></a>
-                    </div>
-                {% endif %}
-            </div>
-        {% endif %}
-    </div>
 
+                    <!-- Double chance -->
+                    <div class="pred-item">
+                        <div class="pred-label"><i class="fas fa-shield-halved"></i> Double chance</div>
+                        <div class="pred-value">{{ predictions.double_chance }}</div>
+                    </div>
+
+                    <!-- Buts estimés -->
+                    <div class="pred-item">
+                        <div class="pred-label"><i class="fas fa-futbol"></i> Buts estimés</div>
+                        <div class="pred-value gold">{{ predictions.goals }}</div>
+                        <div class="gauge-wrap">
+                            <div class="gauge-track">
+                                <div class="gauge-fill gold" id="goalsGauge" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- +/- 2.5 buts -->
+                    <div class="pred-item">
+                        <div class="pred-label"><i class="fas fa-chart-line"></i> Plus/Moins 2.5</div>
+                        <div class="pred-value">{{ predictions.over_under }}</div>
+                    </div>
+
+                    <!-- BTTS -->
+                    <div class="pred-item">
+                        <div class="pred-label"><i class="fas fa-users"></i> Les deux équipes marquent</div>
+                        <div class="pred-value">{{ predictions.both_teams_score }}</div>
+                        <div class="gauge-wrap">
+                            <div class="gauge-track">
+                                <div class="gauge-fill blue" id="bttsGauge" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mi-temps -->
+                    <div class="pred-item">
+                        <div class="pred-label"><i class="fas fa-clock"></i> Gagne au moins une mi-temps</div>
+                        <div class="pred-value">{{ predictions.half_winner }}</div>
+                    </div>
+
+                </div>
+
+                <!-- STATS ÉQUIPES -->
+                <div class="section-title">Statistiques des équipes</div>
+
+                <div class="stats-section">
+                    <div class="stats-grid">
+                        <div>
+                            <div class="stat-team-name">{{ home_team }}</div>
+                            <div class="stat-row">
+                                <div class="stat-row-header">
+                                    <span class="stat-row-label">Buts marqués / match</span>
+                                    <span class="stat-row-val">{{ home_stats.goals_avg_scored }}</span>
+                                </div>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill" id="homeScoredGauge" style="width:0%"></div>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat-row-header">
+                                    <span class="stat-row-label">Buts encaissés / match</span>
+                                    <span class="stat-row-val">{{ home_stats.goals_avg_conceded }}</span>
+                                </div>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill gold" id="homeConcededGauge" style="width:0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="stat-team-name">{{ away_team }}</div>
+                            <div class="stat-row">
+                                <div class="stat-row-header">
+                                    <span class="stat-row-label">Buts marqués / match</span>
+                                    <span class="stat-row-val">{{ away_stats.goals_avg_scored }}</span>
+                                </div>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill" id="awayScoredGauge" style="width:0%"></div>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat-row-header">
+                                    <span class="stat-row-label">Buts encaissés / match</span>
+                                    <span class="stat-row-val">{{ away_stats.goals_avg_conceded }}</span>
+                                </div>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill gold" id="awayConcededGauge" style="width:0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIP SECTION -->
+                <div class="section-title">Prédiction premium</div>
+
+                <div class="vip-section">
+                    <div class="vip-lock-row">
+                        <div class="vip-lock-icon">
+                            <i class="fas fa-lock" id="vipLockIcon"></i>
+                        </div>
+                        <div class="vip-lock-text">
+                            <strong>🏆 Score exact prédit</strong>
+                            <span>Accès réservé aux membres VIP — Entrez votre code pour révéler</span>
+                        </div>
+                        <button class="btn-vip-unlock" onclick="toggleVipForm()">
+                            Déverrouiller
+                        </button>
+                    </div>
+
+                    <div class="vip-form-wrap" id="vipFormWrap">
+                        <div class="vip-input-row">
+                            <input type="text" class="vip-input" id="vipCode" placeholder="Entrez votre code VIP..." autocomplete="off">
+                            <button class="btn-vip-validate" onclick="validateVipCode(event)">Valider</button>
+                        </div>
+                        <div class="vip-error" id="vipError">
+                            <i class="fas fa-circle-exclamation"></i>
+                            Code incorrect. Inscrivez-vous avec le code promo <strong style="color:var(--accent-promo);margin-left:4px;">ALYD1108</strong>
+                        </div>
+                    </div>
+
+                    <div class="vip-unlocked-result" id="vipResult">
+                        <div class="vip-unlocked-value" id="vipScoreDisplay">—</div>
+                    </div>
+                </div>
+
+                <!-- SHARE -->
+                <div class="section-title">Partager</div>
+                <div class="share-row">
+                    <button class="btn-share whatsapp" onclick="shareOnWhatsApp()">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button class="btn-share telegram" onclick="shareOnTelegram()">
+                        <i class="fab fa-telegram"></i> Telegram
+                    </button>
+                </div>
+
+            {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </main>
+
+    <!-- FOOTER -->
     <footer>
-        <p>© 2025 Prédictions Foot - Tous droits réservés</p>
-        <div>
+        <p>© 2025 DilarFoot — Prédictions Foot · Tous droits réservés</p>
+        <div class="footer-links">
             <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
             <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
             <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
@@ -625,116 +1482,150 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+        // ─── Select2 init ───
         $(document).ready(function() {
-            $('#home_team, #away_team, #league_filter').select2({
-                placeholder: function() {
-                    return $(this).attr('id') === 'league_filter' ? 'Toutes les compétitions' : 'Choisir une équipe';
-                },
+            $('#home_team, #away_team').select2({
+                placeholder: 'Choisir une équipe',
                 allowClear: true,
                 width: '100%'
             });
 
             $('#league_filter').on('change', function() {
                 const selectedLeague = $(this).val();
+                const allTeams = {
+                    "Premier League": ["AFC Bournemouth","Arsenal FC","Aston Villa FC","Brentford FC","Brighton & Hove Albion FC","Burnley FC","Chelsea FC","Crystal Palace FC","Everton FC","Fulham FC","Leeds United FC","Liverpool FC","Manchester City FC","Manchester United FC","Newcastle United FC","Nottingham Forest FC","Sunderland AFC","Tottenham Hotspur FC","West Ham United FC","Wolverhampton Wanderers FC"],
+                    "Ligue 1": ["AJ Auxerre","AS Monaco FC","Angers SCO","FC Lorient","FC Metz","FC Nantes","Le Havre AC","Lille OSC","OGC Nice","Olympique Lyonnais","Olympique de Marseille","Paris FC","Paris Saint-Germain FC","RC Strasbourg Alsace","Racing Club de Lens","Stade Brestois 29","Stade Rennais FC 1901","Toulouse FC"],
+                    "Bundesliga": ["1. FC Heidenheim 1846","1. FC Köln","1. FC Union Berlin","1. FSV Mainz 05","Bayer 04 Leverkusen","Borussia Dortmund","Borussia Mönchengladbach","Eintracht Frankfurt","FC Augsburg","FC Bayern München","FC St. Pauli 1910","Hamburger SV","RB Leipzig","SC Freiburg","SV Werder Bremen","TSG 1899 Hoffenheim","VfB Stuttgart","VfL Wolfsburg"],
+                    "Serie A": ["AC Milan","AC Pisa 1909","ACF Fiorentina","AS Roma","Atalanta BC","Bologna FC 1909","Cagliari Calcio","Como 1907","FC Internazionale Milano","Genoa CFC","Hellas Verona FC","Juventus FC","Parma Calcio 1913","SS Lazio","SSC Napoli","Torino FC","US Cremonese","US Lecce","US Sassuolo Calcio","Udinese Calcio"],
+                    "La Liga": ["Athletic Club","CA Osasuna","Club Atlético de Madrid","Deportivo Alavés","Elche CF","FC Barcelona","Getafe CF","Girona FC","Levante UD","RC Celta de Vigo","RCD Espanyol de Barcelona","RCD Mallorca","Rayo Vallecano de Madrid","Real Betis Balompié","Real Madrid CF","Real Oviedo","Real Sociedad de Fútbol","Sevilla FC","Valencia CF","Villarreal CF"],
+                    "UEFA Champions League": ["AC Milan","AC Sparta Praha","AS Monaco FC","Arsenal FC","Aston Villa FC","Atalanta BC","BSC Young Boys","Bayer 04 Leverkusen","Bologna FC 1909","Borussia Dortmund","Celtic FC","Club Atlético de Madrid","Club Brugge KV","FC Barcelona","FC Bayern München","FC Internazionale Milano","FC Red Bull Salzburg","FK Crvena Zvezda","FK Shakhtar Donetsk","Feyenoord Rotterdam","GNK Dinamo Zagreb","Girona FC","Juventus FC","Lille OSC","Liverpool FC","Manchester City FC","PSV","Paris Saint-Germain FC","RB Leipzig","Real Madrid CF","SK Sturm Graz","Sport Lisboa e Benfica","Sporting Clube de Portugal","Stade Brestois 29","VfB Stuttgart","ŠK Slovan Bratislava"],
+                    "Primeira Liga": ["AVS","CD Nacional","CD Santa Clara","CD Tondela","CF Estrela da Amadora","Casa Pia AC","FC Alverca","FC Arouca","FC Famalicão","FC Porto","GD Estoril Praia","Gil Vicente FC","Moreirense FC","Rio Ave FC","Sport Lisboa e Benfica","Sporting Clube de Braga","Sporting Clube de Portugal","Vitória SC"],
+                    "Championship": ["Birmingham City FC","Blackburn Rovers FC","Bristol City FC","Charlton Athletic FC","Coventry City FC","Derby County FC","Hull City AFC","Ipswich Town FC","Leicester City FC","Middlesbrough FC","Millwall FC","Norwich City FC","Oxford United FC","Portsmouth FC","Preston North End FC","Queens Park Rangers FC","Sheffield United FC","Sheffield Wednesday FC","Southampton FC","Stoke City FC","Swansea City AFC","Watford FC","West Bromwich Albion FC","Wrexham AFC"]
+                };
                 $('#home_team, #away_team').each(function() {
-                    const $select = $(this);
-                    $select.empty();
-                    $select.append('<option value="">Choisir une équipe</option>');
-                    const allTeams = {
-                        "Premier League": ["AFC Bournemouth", "Arsenal FC", "Aston Villa FC", "Brentford FC", "Brighton & Hove Albion FC", "Burnley FC", "Chelsea FC", "Crystal Palace FC", "Everton FC", "Fulham FC", "Leeds United FC", "Liverpool FC", "Manchester City FC", "Manchester United FC", "Newcastle United FC", "Nottingham Forest FC", "Sunderland AFC", "Tottenham Hotspur FC", "West Ham United FC", "Wolverhampton Wanderers FC"],
-                        "Ligue 1": ["AJ Auxerre", "AS Monaco FC", "Angers SCO", "FC Lorient", "FC Metz", "FC Nantes", "Le Havre AC", "Lille OSC", "OGC Nice", "Olympique Lyonnais", "Olympique de Marseille", "Paris FC", "Paris Saint-Germain FC", "RC Strasbourg Alsace", "Racing Club de Lens", "Stade Brestois 29", "Stade Rennais FC 1901", "Toulouse FC"],
-                        "Bundesliga": ["1. FC Heidenheim 1846", "1. FC Köln", "1. FC Union Berlin", "1. FSV Mainz 05", "Bayer 04 Leverkusen", "Borussia Dortmund", "Borussia Mönchengladbach", "Eintracht Frankfurt", "FC Augsburg", "FC Bayern München", "FC St. Pauli 1910", "Hamburger SV", "RB Leipzig", "SC Freiburg", "SV Werder Bremen", "TSG 1899 Hoffenheim", "VfB Stuttgart", "VfL Wolfsburg"],
-                        "Serie A": ["AC Milan", "AC Pisa 1909", "ACF Fiorentina", "AS Roma", "Atalanta BC", "Bologna FC 1909", "Cagliari Calcio", "Como 1907", "FC Internazionale Milano", "Genoa CFC", "Hellas Verona FC", "Juventus FC", "Parma Calcio 1913", "SS Lazio", "SSC Napoli", "Torino FC", "US Cremonese", "US Lecce", "US Sassuolo Calcio", "Udinese Calcio"],
-                        "La Liga": ["Athletic Club", "CA Osasuna", "Club Atlético de Madrid", "Deportivo Alavés", "Elche CF", "FC Barcelona", "Getafe CF", "Girona FC", "Levante UD", "RC Celta de Vigo", "RCD Espanyol de Barcelona", "RCD Mallorca", "Rayo Vallecano de Madrid", "Real Betis Balompié", "Real Madrid CF", "Real Oviedo", "Real Sociedad de Fútbol", "Sevilla FC", "Valencia CF", "Villarreal CF"],
-                        "UEFA Champions League": ["AC Milan", "AC Sparta Praha", "AS Monaco FC", "Arsenal FC", "Aston Villa FC", "Atalanta BC", "BSC Young Boys", "Bayer 04 Leverkusen", "Bologna FC 1909", "Borussia Dortmund", "Celtic FC", "Club Atlético de Madrid", "Club Brugge KV", "FC Barcelona", "FC Bayern München", "FC Internazionale Milano", "FC Red Bull Salzburg", "FK Crvena Zvezda", "FK Shakhtar Donetsk", "Feyenoord Rotterdam", "GNK Dinamo Zagreb", "Girona FC", "Juventus FC", "Lille OSC", "Liverpool FC", "Manchester City FC", "PSV", "Paris Saint-Germain FC", "RB Leipzig", "Real Madrid CF", "SK Sturm Graz", "Sport Lisboa e Benfica", "Sporting Clube de Portugal", "Stade Brestois 29", "VfB Stuttgart", "ŠK Slovan Bratislava"],
-                        "Primeira Liga": ["AVS", "CD Nacional", "CD Santa Clara", "CD Tondela", "CF Estrela da Amadora", "Casa Pia AC", "FC Alverca", "FC Arouca", "FC Famalicão", "FC Porto", "GD Estoril Praia", "Gil Vicente FC", "Moreirense FC", "Rio Ave FC", "Sport Lisboa e Benfica", "Sporting Clube de Braga", "Sporting Clube de Portugal", "Vitória SC"],
-                        "Championship": ["Birmingham City FC", "Blackburn Rovers FC", "Bristol City FC", "Charlton Athletic FC", "Coventry City FC", "Derby County FC", "Hull City AFC", "Ipswich Town FC", "Leicester City FC", "Middlesbrough FC", "Millwall FC", "Norwich City FC", "Oxford United FC", "Portsmouth FC", "Preston North End FC", "Queens Park Rangers FC", "Sheffield United FC", "Sheffield Wednesday FC", "Southampton FC", "Stoke City FC", "Swansea City AFC", "Watford FC", "West Bromwich Albion FC", "Wrexham AFC"]
-                    };
-                    const teamsToShow = selectedLeague ? allTeams[selectedLeague] || [] : [].concat(...Object.values(allTeams));
-                    teamsToShow.forEach(team => {
-                        $select.append(`<option value="${team}">${team}</option>`);
-                    });
-                    $select.trigger('change.select2');
+                    const $s = $(this);
+                    $s.empty().append('<option value="">Choisir une équipe</option>');
+                    const teams = selectedLeague ? (allTeams[selectedLeague] || []) : [].concat(...Object.values(allTeams));
+                    teams.forEach(t => $s.append(`<option value="${t}">${t}</option>`));
+                    $s.trigger('change.select2');
                 });
             });
         });
 
-        function toggleTheme() {
-            document.body.classList.toggle('dark-theme');
-            const icon = document.querySelector('.theme-toggle i');
-            if (document.body.classList.contains('dark-theme')) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            } else {
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-            }
+        // ─── Form submit ───
+        function handleSubmit() {
+            document.getElementById('spinner').classList.add('active');
+            document.getElementById('submitBtn').disabled = true;
         }
 
-        function showSpinner() {
-            const spinner = document.getElementById('spinner');
-            const submitBtn = document.getElementById('submitBtn');
-            spinner.style.display = 'block';
-            submitBtn.disabled = true;
+        // ─── Gauge animations ───
+        function animateGauge(id, pct) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            setTimeout(() => { el.style.width = Math.min(100, Math.max(0, pct)) + '%'; }, 100);
         }
 
-        function copyPromoCode() {
-            const promoCode = document.getElementById('promoCode').innerText;
-            navigator.clipboard.writeText(promoCode).then(() => {
-                alert('Code promo copié : ' + promoCode);
-            });
+        function avgToPercent(val, max) {
+            return (parseFloat(val) / max) * 100;
         }
 
-        function toggleVipForm(event, type) {
-            event.preventDefault();
-            const vipForm = document.getElementById('vipForm');
-            vipForm.dataset.type = type; // Stocke le type de prédiction
-            vipForm.classList.add('active');
+        window.addEventListener('DOMContentLoaded', () => {
+            // Result bar (rough equal split as visual — backend can provide real percentages)
+            setTimeout(() => {
+                const rbHome = document.getElementById('rbHome');
+                const rbDraw = document.getElementById('rbDraw');
+                const rbAway = document.getElementById('rbAway');
+                if (rbHome) { rbHome.style.width = '45%'; rbDraw.style.width = '25%'; rbAway.style.width = '30%'; }
+            }, 300);
+
+            // Goals gauge (max ~5 goals avg)
+            {% if predictions and predictions != "no_data" %}
+                animateGauge('goalsGauge', avgToPercent("{{ predictions.goals }}".replace(/[^0-9.]/g,''), 5));
+                animateGauge('bttsGauge', "{{ predictions.both_teams_score }}".toLowerCase().includes('oui') ? 70 : 35);
+                animateGauge('homeScoredGauge', avgToPercent("{{ home_stats.goals_avg_scored }}", 4));
+                animateGauge('homeConcededGauge', avgToPercent("{{ home_stats.goals_avg_conceded }}", 4));
+                animateGauge('awayScoredGauge', avgToPercent("{{ away_stats.goals_avg_scored }}", 4));
+                animateGauge('awayConcededGauge', avgToPercent("{{ away_stats.goals_avg_conceded }}", 4));
+            {% endif %}
+        });
+
+        // ─── VIP ───
+        function toggleVipForm() {
+            const wrap = document.getElementById('vipFormWrap');
+            wrap.classList.toggle('open');
         }
 
         function validateVipCode(event) {
             event.preventDefault();
-            const vipCode = document.getElementById('vipCode').value;
-            const vipForm = document.getElementById('vipForm');
-            const vipError = document.getElementById('vipError');
-            const predictions = document.querySelector('.predictions');
+            const code = document.getElementById('vipCode').value.trim();
             const validCodes = ['VIP11', 'BILY', 'EMI', 'PROF', 'ANG1', 'CHR1', 'MIG1'];
+            const vipError = document.getElementById('vipError');
+            const vipResult = document.getElementById('vipResult');
+            const vipScore = document.getElementById('vipScoreDisplay');
+            const lockIcon = document.getElementById('vipLockIcon');
 
-            if (validCodes.includes(vipCode)) {
-                vipForm.classList.remove('active');
-                vipError.style.display = 'none';
-                let isVip = true; // Simule l'état VIP
-
-                // Met à jour les prédictions VIP
-                const vipMessages = predictions.querySelectorAll('.vip-message');
-                vipMessages.forEach(msg => {
-                    const span = document.createElement('span');
-                    if (msg.textContent.includes('Résultat final (1X2)')) {
-                        span.innerHTML = '<i class="fas fa-trophy"></i> <strong>Résultat final (1X2):</strong> {{ predictions.result }}';
-                    } else if (msg.textContent.includes('Nombre de buts estimé')) {
-                        span.innerHTML = '<i class="fas fa-futbol"></i> <strong>Nombre de buts estimé:</strong> {{ predictions.goals }}';
-                    } else if (msg.textContent.includes('Score exact prédit')) {
-                        span.innerHTML = '<i class="fas fa-scoreboard"></i> <strong>Score exact prédit:</strong> {{ predictions.exact_score }}';
-                    } else if (msg.textContent.includes('Les deux équipes marquent')) {
-                        span.innerHTML = '<i class="fas fa-users"></i> <strong>Les deux équipes marquent:</strong> {{ predictions.both_teams_score }}';
-                    }
-                    msg.parentNode.replaceChild(span, msg);
-                });
+            if (validCodes.includes(code)) {
+                vipError.classList.remove('show');
+                document.getElementById('vipFormWrap').classList.remove('open');
+                vipResult.classList.add('show');
+                lockIcon.className = 'fas fa-lock-open';
+                // Display the exact score from Jinja
+                vipScore.textContent = "{{ predictions.exact_score if predictions and predictions != 'no_data' else '—' }}";
             } else {
-                vipError.style.display = 'block';
+                vipError.classList.add('show');
             }
         }
 
-        function shareOnWhatsApp() {
-            const match = document.querySelector('.match-title').textContent;
-            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent('Check this match prediction: ' + match)}`;
-            window.open(url, '_blank');
+        // ─── Promo copy (avec fallback HTTP) ───
+        function copyPromoCode() {
+            const CODE = 'ALYD1108';
+            const pill = document.getElementById('promoCodePill');
+
+            function flashCopied() {
+                pill.classList.add('copied');
+                setTimeout(() => pill.classList.remove('copied'), 1800);
+            }
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(CODE).then(flashCopied).catch(fallback);
+            } else {
+                fallback();
+            }
+
+            function fallback() {
+                const ta = document.createElement('textarea');
+                ta.value = CODE;
+                ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    flashCopied();
+                } catch(e) {
+                    alert('Code promo : ' + CODE);
+                }
+                document.body.removeChild(ta);
+            }
         }
 
+        // ─── Mobile menu ───
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('open');
+        }
+
+        // ─── Share ───
+        function shareOnWhatsApp() {
+            const match = "{{ home_team }} vs {{ away_team }}";
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent('🔥 Prédiction DilarFoot: ' + match + ' — ' + window.location.href)}`, '_blank');
+        }
         function shareOnTelegram() {
-            const match = document.querySelector('.match-title').textContent;
-            const url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent('Check this match prediction: ' + match)}`;
-            window.open(url, '_blank');
+            const match = "{{ home_team }} vs {{ away_team }}";
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent('🔥 Prédiction DilarFoot: ' + match)}`, '_blank');
+        }
+        function shareOn1xbet() {
+            const match = "{{ home_team }} vs {{ away_team }}";
+            window.open(`https://1xbet.bj/en?tag=d_4308596m_97c_=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent('🔥 Prédiction DilarFoot: ' + match)}`, '_blank');
         }
     </script>
 </body>
