@@ -465,18 +465,18 @@
             <span class="brand-text">DYLAR<span>*</span>FOOT</span>
         </a>
         <ul class="navbar-links">
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/about" class="active">À propos</a></li>
-            <li><a href="/contact">Contact</a></li>
+ <li><a href="{{ url_for('index') }}">Accueil</a></li>
+<li><a href="{{ url_for('about') }}">À propos</a></li>
+<li><a href="{{ url_for('contact') }}">Contact</a></li>
         </ul>
         <button class="navbar-hamburger" onclick="toggleMenu()" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
     </nav>
     <div class="mobile-menu" id="mobileMenu">
-        <a href="/">Accueil</a>
-        <a href="/about">À propos</a>
-        <a href="/contact">Contact</a>
+ <li><a href="{{ url_for('index') }}">Accueil</a></li>
+<li><a href="{{ url_for('about') }}">À propos</a></li>
+<li><a href="{{ url_for('contact') }}">Contact</a></li>
     </div>
 
     <!-- PROMO TICKER -->

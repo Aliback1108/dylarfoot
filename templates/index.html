@@ -123,15 +123,7 @@
             gap: 5px;
             padding: 4px;
         }
-        .navbar-hamburger span {
-            display: block;
-            width: 22px;
-            height: 2px;
-            background: var(--text-primary);
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-
+        .navbar-hamburger span { display: block; width: 22px; height: 2px; background: var(--text-primary); border-radius: 2px; }
         .mobile-menu {
             display: none;
             flex-direction: column;
@@ -139,16 +131,12 @@
             border-bottom: 1px solid var(--border);
             padding: 16px 24px;
             gap: 16px;
+            position: sticky;
+            top: 64px;
+            z-index: 99;
         }
         .mobile-menu.open { display: flex; }
-        .mobile-menu a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
+        .mobile-menu a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
 
         /* ─── HERO ─── */
         .hero {
@@ -1126,6 +1114,11 @@
         }
         .no-data i { font-size: 2rem; color: var(--text-muted); margin-bottom: 12px; display: block; }
         .no-data p { font-size: 0.9rem; }
+
+                @media (max-width: 768px) {
+            .navbar-links { display: none; }
+            .navbar-hamburger { display: flex; }
+        }
     </style>
 </head>
 <body>
@@ -1136,17 +1129,17 @@
             <img src="{{ url_for('static', filename='logo.svg') }}" alt="DilarFoot">
             <span class="brand-text">DYLAR<span>*</span>FOOT</span>
         </a>
-        <ul class="navbar-links" id="desktopNav">
+        <ul class="navbar-links">
  <li><a href="{{ url_for('index') }}">Accueil</a></li>
 <li><a href="{{ url_for('about') }}">À propos</a></li>
 <li><a href="{{ url_for('contact') }}">Contact</a></li>
         </ul>
-        <button class="navbar-hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
+        <button class="navbar-hamburger" onclick="toggleMenu()" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
     </nav>
     <div class="mobile-menu" id="mobileMenu">
-<li><a href="{{ url_for('index') }}">Accueil</a></li>
+ <li><a href="{{ url_for('index') }}">Accueil</a></li>
 <li><a href="{{ url_for('about') }}">À propos</a></li>
 <li><a href="{{ url_for('contact') }}">Contact</a></li>
     </div>
@@ -1482,6 +1475,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
         // ─── Select2 init ───
         $(document).ready(function() {
             $('#home_team, #away_team').select2({

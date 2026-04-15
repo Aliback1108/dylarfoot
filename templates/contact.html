@@ -407,18 +407,18 @@
             <span class="brand-text">DYLAR<span>*</span>FOOT</span>
         </a>
         <ul class="navbar-links">
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/about">À propos</a></li>
-            <li><a href="/contact" class="active">Contact</a></li>
+ <li><a href="{{ url_for('index') }}">Accueil</a></li>
+<li><a href="{{ url_for('about') }}">À propos</a></li>
+<li><a href="{{ url_for('contact') }}">Contact</a></li>
         </ul>
         <button class="navbar-hamburger" onclick="toggleMenu()" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
     </nav>
     <div class="mobile-menu" id="mobileMenu">
-        <a href="/">Accueil</a>
-        <a href="/about">À propos</a>
-        <a href="/contact">Contact</a>
+ <li><a href="{{ url_for('index') }}">Accueil</a></li>
+<li><a href="{{ url_for('about') }}">À propos</a></li>
+<li><a href="{{ url_for('contact') }}">Contact</a></li>
     </div>
 
     <!-- PROMO TICKER -->
@@ -497,7 +497,8 @@
                     <div class="perk"><i class="fas fa-check-circle"></i> Discussions matchs</div>
                     <div class="perk"><i class="fas fa-check-circle"></i> Communauté active</div>
                 </div>
-                <a href="https://chat.whatsapp.com/VOTRE_LIEN" target="_blank" rel="noopener" class="community-cta">
+                <button class="btn-promo-cta" onclick="linkwhatsapp()">Rejoindre le groupe →</button>
+                <a href="https://chat.whatsapp.com/HGjRa6jMlMTEROVMNlQFik" target="_blank" rel="noopener" class="community-cta">
                     Rejoindre le groupe <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -625,6 +626,10 @@
 
     <script>
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+
+        function linkwhatsapp() {
+            window.open(`https://chat.whatsapp.com/HGjRa6jMlMTEROVMNlQFik=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent}`, '_blank');
+        }
 
         function toggleFaq(btn) {
             const item = btn.closest('.faq-item');
