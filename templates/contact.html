@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Contactez DilarFoot — Rejoignez notre communauté Telegram et WhatsApp pour les coupons gratuits.">
     <title>DilarFoot — Contact</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ballon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='logo.svg') }}">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -63,7 +63,7 @@
             display: flex; align-items: center; justify-content: space-between;
         }
         .navbar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .navbar-brand img { width: 28px; height: 28px; border-radius: 50%; transition: transform 0.6s ease; }
+        .navbar-brand img { width: 28px; height: 28px }
         .navbar-brand img:hover { transform: rotate(360deg); }
         .brand-text { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-primary); }
         .brand-text span { color: var(--accent-green); }
@@ -403,7 +403,7 @@
     <!-- NAVBAR -->
     <nav class="navbar">
         <a class="navbar-brand" href="/">
-            <img src="{{ url_for('static', filename='ballon.png') }}" alt="DilarFoot">
+            <img src="{{ url_for('static', filename='logo.svg') }}" alt="DilarFoot">
             <span class="brand-text">DYLAR<span>*</span>FOOT</span>
         </a>
         <ul class="navbar-links">
