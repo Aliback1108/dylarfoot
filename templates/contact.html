@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Contactez DilarFoot — Rejoignez notre communauté Telegram et WhatsApp pour les coupons gratuits.">
     <title>DilarFoot — Contact</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.svg') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ballon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -63,7 +63,7 @@
             display: flex; align-items: center; justify-content: space-between;
         }
         .navbar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .navbar-brand img { width: 28px; height: 28px; }
+        .navbar-brand img { width: 28px; height: 28px; border-radius: 50%; transition: transform 0.6s ease; }
         .navbar-brand img:hover { transform: rotate(360deg); }
         .brand-text { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-primary); }
         .brand-text span { color: var(--accent-green); }
@@ -403,7 +403,7 @@
     <!-- NAVBAR -->
     <nav class="navbar">
         <a class="navbar-brand" href="/">
-            <img src="{{ url_for('static', filename='logo.svg') }}" alt="DilarFoot">
+            <img src="{{ url_for('static', filename='ballon.png') }}" alt="DilarFoot">
             <span class="brand-text">DYLAR<span>*</span>FOOT</span>
         </a>
         <ul class="navbar-links">
@@ -482,7 +482,7 @@
             </div>
 
             <!-- WHATSAPP -->
-            <div class="community-card wa">
+            <a href="https://chat.whatsapp.com/HGjRa6jMlMTEROVMNlQFik" target="_blank" rel="noopener" class="community-card wa">
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <div class="community-card-icon"><i class="fab fa-whatsapp"></i></div>
                     <span class="members-pill"><i class="fas fa-circle"></i> Groupe actif</span>
@@ -497,11 +497,10 @@
                     <div class="perk"><i class="fas fa-check-circle"></i> Discussions matchs</div>
                     <div class="perk"><i class="fas fa-check-circle"></i> Communauté active</div>
                 </div>
-                <button class="btn-promo-cta" onclick="linkwhatsapp()">Rejoindre le groupe →</button>
-                <a href="https://chat.whatsapp.com/HGjRa6jMlMTEROVMNlQFik" target="_blank" rel="noopener" class="community-cta">
+                <div class="community-cta">
                     Rejoindre le groupe <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
+                </div>
+            </a>
 
         </div>
 
@@ -627,10 +626,6 @@
     <script>
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
 
-        function linkwhatsapp() {
-            window.open(`https://chat.whatsapp.com/HGjRa6jMlMTEROVMNlQFik=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent}`, '_blank');
-        }
-
         function toggleFaq(btn) {
             const item = btn.closest('.faq-item');
             const isOpen = item.classList.contains('open');
@@ -639,16 +634,54 @@
         }
 
         function submitForm() {
-            const name = document.getElementById('fname').value.trim();
-            const email = document.getElementById('femail').value.trim();
+            const name    = document.getElementById('fname').value.trim();
+            const email   = document.getElementById('femail').value.trim();
             const subject = document.getElementById('fsubject').value;
             const message = document.getElementById('fmessage').value.trim();
+
+            // Validation client
             if (!name || !email || !subject || !message) {
-                alert('Veuillez remplir tous les champs.');
+                showFormError('Veuillez remplir tous les champs.');
                 return;
             }
-            document.getElementById('contactForm').style.display = 'none';
-            document.getElementById('formSuccess').classList.add('show');
+
+            const btn = document.querySelector('.btn-submit');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+            fetch('/send-contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, subject, message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('contactForm').style.display = 'none';
+                    document.getElementById('formSuccess').classList.add('show');
+                } else {
+                    showFormError(data.error || 'Une erreur est survenue. Réessayez.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer le message';
+                }
+            })
+            .catch(() => {
+                showFormError('Impossible de contacter le serveur. Réessayez.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer le message';
+            });
+        }
+
+        function showFormError(msg) {
+            let el = document.getElementById('formError');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'formError';
+                el.style.cssText = 'margin-top:12px;padding:10px 14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#F87171;font-size:0.83rem;display:flex;align-items:center;gap:8px;';
+                document.querySelector('.btn-submit').insertAdjacentElement('afterend', el);
+            }
+            el.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + msg;
+            el.style.display = 'flex';
         }
 
         function copyPromoCode() {
